@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AdminDashboardActivity">
+
+    <!-- SIDEBAR (Navigation Drawer) -->
+    <LinearLayout
+        android:id="@+id/sidebar"
+        android:layout_width="260dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#263238"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Admin Profile -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ADMIN"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:drawableLeft="@android:drawable/ic_menu_manage"
+            android:drawablePadding="8dp"
+            android:paddingBottom="16dp" />
+
+        <!-- REPORTS Section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="REPORTS"
+            android:textColor="#9E9E9E"
+            android:textStyle="bold"
+            android:paddingTop="10dp" />
+
+        <Button
+            android:id="@+id/btnDashboard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Dashboard"
+            android:textAllCaps="false"
+            android:backgroundTint="#37474F"
+            android:textColor="#FFFFFF"
+            android:drawableLeft="@android:drawable/ic_menu_view"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btnVotes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Votes"
+            android:textAllCaps="false"
+            android:backgroundTint="#37474F"
+            android:textColor="#FFFFFF"
+            android:drawableLeft="@android:drawable/ic_menu_agenda"
+            android:layout_marginTop="4dp" />
+
+        <!-- MANAGE Section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="MANAGE"
+            android:textColor="#9E9E9E"
+            android:textStyle="bold"
+            android:paddingTop="14dp" />
+
+        <Button
+            android:id="@+id/btnPositions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Positions"
+            android:textAllCaps="false"
+            android:backgroundTint="#37474F"
+            android:textColor="#FFFFFF"
+            android:drawableLeft="@android:drawable/ic_menu_sort_by_size"
+            android:layout_marginTop="4dp" />
+
+        <Button
+            android:id="@+id/btnCandidates"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Candidates"
+            android:textAllCaps="false"
+            android:backgroundTint="#37474F"
+            android:textColor="#FFFFFF"
+            android:drawableLeft="@android:drawable/ic_menu_manage"
+            android:layout_marginTop="4dp" />
+
+        <!-- SETTINGS Section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="SETTINGS"
+            android:textColor="#9E9E9E"
+            android:textStyle="bold"
+            android:paddingTop="14dp" />
+
+        <Button
+            android:id="@+id/btnBallotPosition"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ballot Position"
+            android:textAllCaps="false"
+            android:backgroundTint="#37474F"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="4dp" />
+
+        <Button
+            android:id="@+id/btnElectionTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Election Title"
+            android:textAllCaps="false"
+            android:backgroundTint="#37474F"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="4dp" />
+
+    </LinearLayout>
+
+    <!-- MAIN CONTENT AREA -->
+    <FrameLayout
+        android:id="@+id/mainContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/fragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+        <!-- Toolbar fixed at top -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#1976D2"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            android:title="VotingSystem" />
+
+        <!-- Dashboard Scrollable View -->
+        <ScrollView
+            android:id="@+id/dashboardView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:background="#ECEFF1"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:text="Dashboard"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="#000000"
+                    android:layout_marginBottom="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <!-- Cards Grid -->
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:columnCount="2"
+                    android:alignmentMode="alignMargins"
+                    android:useDefaultMargins="true">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:background="#03A9F4"
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_columnWeight="1"
+                        android:gravity="center">
+                        <TextView android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:text="0" android:textSize="28sp" android:textStyle="bold" android:textColor="#FFF" />
+                        <TextView android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:text="No. of Positions" android:textColor="#FFF" />
+                        <TextView android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:text="More info →" android:textColor="#B3E5FC" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:background="#4CAF50"
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_columnWeight="1"
+                        android:gravity="center">
+                        <TextView android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:text="0" android:textSize="28sp" android:textStyle="bold" android:textColor="#FFF" />
+                        <TextView android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:text="No. of Candidates" android:textColor="#FFF" />
+                        <TextView android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:text="More info →" android:textColor="#C8E6C9" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:background="#FF9800"
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_columnWeight="1"
+                        android:gravity="center">
+                        <TextView android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:text="1" android:textSize="28sp" android:textStyle="bold" android:textColor="#FFF" />
+                        <TextView android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:text="Total Voters" android:textColor="#FFF" />
+                        <TextView android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:text="More info →" android:textColor="#FFE0B2" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:background="#F44336"
+                        android:layout_width="0dp"
+                        android:layout_height="120dp"
+                        android:layout_columnWeight="1"
+                        android:gravity="center">
+                        <TextView android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:text="0" android:textSize="28sp" android:textStyle="bold" android:textColor="#FFF" />
+                        <TextView android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:text="Voters Voted" android:textColor="#FFF" />
+                        <TextView android:layout_width="match_parent"
+                            android:layout_height="wrap_content" android:text="More info →" android:textColor="#FFCDD2" />
+                    </LinearLayout>
+                </GridLayout>
+
+                <!-- Votes Tally Section -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Votes Tally"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#000"
+                    android:layout_marginTop="20dp" />
+
+                <Button
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btnPrint"
+                    android:text="Print"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:backgroundTint="#388E3C"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="8dp"
+                    android:layout_width="100dp" />
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+</androidx.drawerlayout.widget.DrawerLayout>

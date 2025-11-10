@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ECEFF1"
+    tools:context=".LoginActivity">
+
+    <!-- Centered Form -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:layout_gravity="center">
+
+        <!-- Title -->
+        <TextView
+            android:text="Login"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#2C3E50"
+            android:layout_marginBottom="24dp"
+            android:textAlignment="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Form Container -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:background="@drawable/bg_form"
+            android:elevation="6dp"
+            android:clipToPadding="false"
+            android:layout_marginBottom="16dp">
+
+            <!-- ID Number Label -->
+            <TextView
+                android:text="ID Number"
+                android:textColor="#455A64"
+                android:textSize="14sp"
+                android:layout_marginBottom="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <!-- ID Number Field -->
+            <EditText
+                android:id="@+id/etIdNumber"
+                android:hint="Enter ID Number"
+                android:inputType="number"
+                android:background="@drawable/bg_edittext"
+                android:padding="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Password Label -->
+            <TextView
+                android:text="Password"
+                android:textColor="#455A64"
+                android:textSize="14sp"
+                android:layout_marginBottom="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <!-- Password Field -->
+            <EditText
+                android:id="@+id/etPassword"
+                android:hint="Enter Password"
+                android:inputType="textPassword"
+                android:background="@drawable/bg_edittext"
+                android:padding="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Login Button -->
+            <Button
+                android:id="@+id/btnLogin"
+                android:text="Login"
+                android:backgroundTint="#2196F3"
+                android:textColor="#FFFFFF"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_button" />
+
+            <!-- Register Link -->
+            <TextView
+                android:id="@+id/tvRegister"
+                android:text="Don't have an account? Register"
+                android:textColor="#00695C"
+                android:layout_marginTop="16dp"
+                android:textAlignment="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:textSize="14sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+</FrameLayout>
