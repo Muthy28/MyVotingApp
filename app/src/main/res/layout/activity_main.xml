@@ -7,8 +7,9 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <!-- Main Content Area -->
+    <!-- Home Content (Visible by default) -->
     <LinearLayout
+        android:id="@+id/homeContent"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -73,6 +74,14 @@
             android:layout_height="0dp"
             android:layout_weight="1"/>
     </LinearLayout>
+
+    <!-- Fragment Container for Profile (Hidden by default) -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:visibility="gone"/>
 
     <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView

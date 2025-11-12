@@ -1,48 +1,90 @@
 package com.example.myvotingapp
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myvotingapp.databinding.ActivityMainBinding
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var db: AppDatabase
-    private lateinit var adapter: CandidateAdapter
+    private lateinit var adapter: SectionCandidateAdapter
+    private var loggedInVoterId: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Get the logged-in voter ID from intent
+        loggedInVoterId = intent.getStringExtra("LOGGED_IN_VOTER_ID") ?: ""
+
         db = AppDatabase.getDatabase(this)
 
         setupUI()
         setupBottomNavigation()
+
+        // Load home by default
+        showHomeContent()
     }
 
     private fun setupUI() {
-        // Welcome message
+        // Set default welcome message first
+        binding.tvWelcome.text = "Welcome, Voter"
+
+        // Welcome message with actual voter name
         lifecycleScope.launch {
-            val voter = db.voterDao().getVoterById("12345678") // example for testing
-            voter?.let {
-                binding.tvWelcome.text = "Welcome, ${it.firstName}"
+            try {
+                val voter = if (loggedInVoterId.isNotEmpty()) {
+                    db.voterDao().getVoterById(loggedInVoterId)
+                } else {
+                    null
+                }
+
+                voter?.let {
+                    binding.tvWelcome.text = "Welcome, ${it.firstName} ${it.lastName}"
+                }
+            } catch (e: Exception) {
+                // Keep default welcome message if error
+                binding.tvWelcome.text = "Welcome, Voter"
             }
         }
 
-        // RecyclerView for candidates
-        adapter = CandidateAdapter()
+        // RecyclerView for candidates with sections
+        adapter = SectionCandidateAdapter()
         binding.rvCandidates.layoutManager = LinearLayoutManager(this)
         binding.rvCandidates.adapter = adapter
 
-        // Fetch all candidates
+        // Fetch candidates and positions, then group them
         lifecycleScope.launch {
-            db.candidateDao().getAllCandidatesFlow().collectLatest { candidates ->
-                adapter.submitList(candidates)
+            // Combine both flows to get positions and candidates
+            combine(
+                db.positionDao().getAllPositionsFlow(),
+                db.candidateDao().getAllCandidatesFlow()
+            ) { positions, candidates ->
+                // Create a list with headers and candidates grouped by position
+                val items = mutableListOf<ListItem>()
+
+                positions.forEach { position ->
+                    // Add header for this position
+                    items.add(ListItem.Header(position.name))
+
+                    // Add all candidates for this position
+                    val positionCandidates = candidates.filter { it.positionId == position.positionId }
+                    positionCandidates.forEach { candidate ->
+                        items.add(ListItem.CandidateItem(candidate))
+                    }
+                }
+
+                items
+            }.collect { items ->
+                adapter.submitList(items)
             }
         }
     }
@@ -51,23 +93,66 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
-                    // Already on home, no need to change
+                    showHomeContent()
                     true
                 }
                 R.id.nav_votes -> {
-                    // TODO: Navigate to Votes screen
+                    // Show home for now (will implement later)
+                    showHomeContent()
+                    binding.bottomNav.selectedItemId = R.id.nav_home
                     true
                 }
                 R.id.nav_my_votes -> {
-                    // TODO: Navigate to MyVotes screen
+                    // Show home for now (will implement later)
+                    showHomeContent()
+                    binding.bottomNav.selectedItemId = R.id.nav_home
                     true
                 }
                 R.id.nav_profile -> {
-                    // TODO: Navigate to Profile screen
+                    showProfileFragment()
                     true
                 }
                 else -> false
             }
+        }
+    }
+
+    private fun showHomeContent() {
+        // Clear any fragments
+        supportFragmentManager.popBackStack(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
+        // Make home content visible and hide fragment container
+        binding.homeContent.visibility = View.VISIBLE
+        binding.fragmentContainerView.visibility = View.GONE
+    }
+
+    private fun showProfileFragment() {
+        // Hide home content and show fragment container
+        binding.homeContent.visibility = View.GONE
+        binding.fragmentContainerView.visibility = View.VISIBLE
+
+        // Create and show ProfileFragment
+        val profileFragment = ProfileFragment().apply {
+            arguments = Bundle().apply {
+                putString("LOGGED_IN_VOTER_ID", loggedInVoterId)
+            }
+        }
+        supportFragmentManager.commit {
+            replace(R.id.fragmentContainerView, profileFragment)
+            addToBackStack("profile")
+        }
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            supportFragmentManager.popBackStack()
+            // If we're back to no fragments, show home content
+            if (supportFragmentManager.backStackEntryCount == 0) {
+                showHomeContent()
+                binding.bottomNav.selectedItemId = R.id.nav_home
+            }
+        } else {
+            super.onBackPressed()
         }
     }
 }
