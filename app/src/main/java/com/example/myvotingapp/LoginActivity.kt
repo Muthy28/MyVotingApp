@@ -41,7 +41,7 @@ class LoginActivity : AppCompatActivity() {
                             startActivity(Intent(this@LoginActivity, AdminDashboardActivity::class.java))
                         }
                         voter != null && voter.password.trim() == password -> {
-                            startActivity(Intent(this@LoginActivity, VoterDashboardActivity::class.java))
+                            startActivity(Intent(this@LoginActivity, UserActivity::class.java))
                         }
                         else -> {
                             Toast.makeText(this@LoginActivity, "Invalid credentials", Toast.LENGTH_SHORT).show()

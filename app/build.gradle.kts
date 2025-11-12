@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.myvotingapp"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -42,6 +42,10 @@ android {
 }
 
 dependencies {
+    dependencies {
+        implementation("androidx.fragment:fragment-ktx:1.8.2")
+    }
+
     // AndroidX Core
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")
