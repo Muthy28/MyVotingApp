@@ -33,7 +33,7 @@
             android:name=".RegisterActivity"
             android:theme="@style/Theme.MyVotingApp" />
         <activity
-            android:name=".UserActivity"
+            android:name=".MainActivity"
             android:theme="@style/Theme.MyVotingApp" />
         <activity
             android:name=".AdminDashboardActivity"
