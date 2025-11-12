@@ -12,118 +12,151 @@ import kotlinx.coroutines.launch
 
 class PositionsFragment : Fragment() {
 
-    private lateinit var positionDao: PositionDao
-    private lateinit var positionListLayout: LinearLayout
-    private lateinit var edtPositionName: EditText
-    private lateinit var btnAddPosition: Button
-    private lateinit var btnUpdatePosition: Button
-    private lateinit var btnDeletePosition: Button
-    private var selectedPosition: Position? = null
+    private lateinit var addBtn: Button
+    private lateinit var updateBtn: Button
+    private lateinit var deleteBtn: Button
+    private lateinit var formContainer: LinearLayout
+    private lateinit var db: AppDatabase
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragments_positions, container, false)
+    ): View {
+        val root = inflater.inflate(R.layout.fragment_positions, container, false)
 
-        // Initialize DAO
-        positionDao = AppDatabase.getDatabase(requireContext()).positionDao()
+        addBtn = root.findViewById(R.id.btnAddPosition)
+        updateBtn = root.findViewById(R.id.btnUpdatePosition)
+        deleteBtn = root.findViewById(R.id.btnDeletePosition)
+        formContainer = root.findViewById(R.id.formContainer)
 
-        positionListLayout = view.findViewById(R.id.positionListLayout)
-        edtPositionName = view.findViewById(R.id.edtPositionName)
-        btnAddPosition = view.findViewById(R.id.btnAddPosition)
-        btnUpdatePosition = view.findViewById(R.id.btnUpdatePosition)
-        btnDeletePosition = view.findViewById(R.id.btnDeletePosition)
+        db = AppDatabase.getDatabase(requireContext())
 
-        selectedPosition = null
+        addBtn.setOnClickListener { showAddForm() }
+        updateBtn.setOnClickListener { showUpdateForm() }
+        deleteBtn.setOnClickListener { showDeleteForm() }
 
-        // Button listeners
-        btnAddPosition.setOnClickListener { addPosition() }
-        btnUpdatePosition.setOnClickListener { updatePosition() }
-        btnDeletePosition.setOnClickListener { confirmDeletePosition() }
-
-        // Observe positions
-        loadPositions()
-
-        return view
+        return root
     }
 
-    private fun loadPositions() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            positionDao.getAllPositionsFlow().collect { positions ->
-                positionListLayout.removeAllViews()
-                positions.forEach { position ->
-                    val textView = TextView(requireContext())
-                    textView.text = "• ${position.name}"
-                    textView.textSize = 18f
-                    textView.setPadding(8, 8, 8, 8)
-                    textView.setOnClickListener {
-                        selectedPosition = position
-                        edtPositionName.setText(position.name)
-                        Toast.makeText(requireContext(), "Selected: ${position.name}", Toast.LENGTH_SHORT).show()
-                    }
-                    positionListLayout.addView(textView)
+    /** ---------------- ADD POSITION ---------------- **/
+    private fun showAddForm() {
+        formContainer.removeAllViews()
+
+        val editText = EditText(requireContext()).apply {
+            hint = "Enter Position Name"
+        }
+
+        val submit = Button(requireContext()).apply {
+            text = "Submit"
+            setBackgroundColor(resources.getColor(android.R.color.holo_green_dark))
+            setTextColor(resources.getColor(android.R.color.white))
+        }
+
+        submit.setOnClickListener {
+            val positionName = editText.text.toString().trim()
+            if (positionName.isEmpty()) {
+                Toast.makeText(requireContext(), "Enter a position name", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            lifecycleScope.launch {
+                db.positionDao().insert(Position(name = positionName))
+                Toast.makeText(requireContext(), "Position Added", Toast.LENGTH_SHORT).show()
+                editText.text.clear()
+            }
+        }
+
+        formContainer.addView(editText)
+        formContainer.addView(submit)
+    }
+
+    /** ---------------- UPDATE POSITION ---------------- **/
+    private fun showUpdateForm() {
+        formContainer.removeAllViews()
+
+        val editTextId = EditText(requireContext()).apply {
+            hint = "Enter Position ID to Update"
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER
+        }
+
+        val editTextName = EditText(requireContext()).apply {
+            hint = "Enter New Position Name"
+        }
+
+        val submit = Button(requireContext()).apply {
+            text = "Update"
+            setBackgroundColor(resources.getColor(android.R.color.holo_orange_dark))
+            setTextColor(resources.getColor(android.R.color.white))
+        }
+
+        submit.setOnClickListener {
+            val id = editTextId.text.toString().toLongOrNull()
+            val newName = editTextName.text.toString().trim()
+
+            if (id == null || newName.isEmpty()) {
+                Toast.makeText(requireContext(), "Please enter valid ID and name", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            lifecycleScope.launch {
+                val position = db.positionDao().getPositionById(id)
+                if (position != null) {
+                    // ✅ Update only the name and call update()
+                    position.name = newName
+                    db.positionDao().update(position)
+                    Toast.makeText(requireContext(), "Position Updated", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireContext(), "Position ID not found", Toast.LENGTH_SHORT).show()
                 }
             }
         }
+
+        formContainer.addView(editTextId)
+        formContainer.addView(editTextName)
+        formContainer.addView(submit)
     }
 
-    private fun addPosition() {
-        val name = edtPositionName.text.toString().trim()
-        if (name.isEmpty()) {
-            Toast.makeText(requireContext(), "Enter position name", Toast.LENGTH_SHORT).show()
-            return
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            positionDao.insert(Position(name = name))
-            edtPositionName.text.clear()
-            Toast.makeText(requireContext(), "Position added!", Toast.LENGTH_SHORT).show()
-        }
-    }
+    /** ---------------- DELETE POSITION ---------------- **/
+    private fun showDeleteForm() {
+        formContainer.removeAllViews()
 
-    private fun updatePosition() {
-        val name = edtPositionName.text.toString().trim()
-        val pos = selectedPosition
-        if (pos == null) {
-            Toast.makeText(requireContext(), "Select a position to update", Toast.LENGTH_SHORT).show()
-            return
-        }
-        if (name.isEmpty()) {
-            Toast.makeText(requireContext(), "Enter new position name", Toast.LENGTH_SHORT).show()
-            return
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            val updated = pos.copy(name = name)
-            positionDao.insert(updated) // Reinsert with same ID (replace)
-            Toast.makeText(requireContext(), "Position updated!", Toast.LENGTH_SHORT).show()
-            edtPositionName.text.clear()
-            selectedPosition = null
-        }
-    }
-
-    private fun confirmDeletePosition() {
-        val pos = selectedPosition
-        if (pos == null) {
-            Toast.makeText(requireContext(), "Select a position to delete", Toast.LENGTH_SHORT).show()
-            return
+        val editTextId = EditText(requireContext()).apply {
+            hint = "Enter Position ID to Delete"
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER
         }
 
-        AlertDialog.Builder(requireContext())
-            .setTitle("Delete Position")
-            .setMessage("Do you really want to delete ${pos.name}?")
-            .setPositiveButton("Yes") { _, _ ->
-                deletePosition(pos)
+        val submit = Button(requireContext()).apply {
+            text = "Delete"
+            setBackgroundColor(resources.getColor(android.R.color.holo_red_dark))
+            setTextColor(resources.getColor(android.R.color.white))
+        }
+
+        submit.setOnClickListener {
+            val id = editTextId.text.toString().toLongOrNull()
+            if (id == null) {
+                Toast.makeText(requireContext(), "Enter a valid Position ID", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
-            .setNegativeButton("No", null)
-            .show()
-    }
 
-    private fun deletePosition(position: Position) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            positionDao.delete(position)
-            Toast.makeText(requireContext(), "Position deleted", Toast.LENGTH_SHORT).show()
-            selectedPosition = null
-            edtPositionName.text.clear()
+            AlertDialog.Builder(requireContext())
+                .setTitle("Confirm Delete")
+                .setMessage("Are you sure you want to delete Position ID $id?")
+                .setPositiveButton("Yes") { _, _ ->
+                    lifecycleScope.launch {
+                        val position = db.positionDao().getPositionById(id)
+                        if (position != null) {
+                            db.positionDao().delete(position)
+                            Toast.makeText(requireContext(), "Position Deleted", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(requireContext(), "Position ID not found", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+                .setNegativeButton("No", null)
+                .show()
         }
+
+        formContainer.addView(editTextId)
+        formContainer.addView(submit)
     }
 }

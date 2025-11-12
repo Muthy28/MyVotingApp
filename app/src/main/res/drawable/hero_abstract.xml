@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Base Gradient Background -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#4A00E0"
+                android:centerColor="#8E2DE2"
+                android:endColor="#B388FF"
+                android:angle="45" />
+        </shape>
+    </item>
+
+    <!-- Abstract Light Curve Overlay (top right) -->
+    <item
+        android:top="-200dp"
+        android:left="180dp">
+        <shape android:shape="oval">
+            <size android:width="600dp" android:height="600dp" />
+            <solid android:color="#26FFFFFF" />
+        </shape>
+    </item>
+
+    <!-- Abstract Dark Curve Overlay (bottom left) -->
+    <item
+        android:bottom="300dp"
+        android:left="-250dp">
+        <shape android:shape="oval">
+            <size android:width="800dp" android:height="800dp" />
+            <solid android:color="#1A000000" />
+        </shape>
+    </item>
+
+</layer-list>

@@ -1,103 +1,82 @@
 package com.example.myvotingapp
 
 import android.os.Bundle
-import android.widget.Button
-import android.widget.Toast
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.widget.Toolbar
 import android.view.View
-import androidx.fragment.app.Fragment
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.LinearLayout
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.commit
 
 class AdminDashboardActivity : AppCompatActivity() {
 
-    private lateinit var drawerLayout: DrawerLayout
-    private lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var arrowIcon: ImageView
+    private lateinit var manageMenu: LinearLayout
+    private var isExpanded = false
 
-    private lateinit var dashboardView: View
-    private lateinit var fragmentContainer: View
+    private lateinit var btnDashboard: Button
+    private lateinit var btnVotes: Button
+    private lateinit var btnPositions: Button
+    private lateinit var btnCandidates: Button
+    private lateinit var btnElectionTitle: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_admin_dashboard)
 
-        // Toolbar setup
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        // Drawer setup
-        drawerLayout = findViewById(R.id.drawerLayout)
-        toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close)
-        drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
+        arrowIcon = findViewById(R.id.arrowIcon)
+        manageMenu = findViewById(R.id.manageMenu)
+        val dropdown = findViewById<LinearLayout>(R.id.manageDropdown)
 
-        dashboardView = findViewById(R.id.dashboardView)
-        fragmentContainer = findViewById(R.id.fragmentContainer)
-
-        // Sidebar button listeners
-        findViewById<Button>(R.id.btnDashboard).setOnClickListener {
-            showDashboard()
-            drawerLayout.closeDrawers()
+        dropdown.setOnClickListener {
+            if (isExpanded) {
+                manageMenu.visibility = View.GONE
+                arrowIcon.rotation = 0f
+            } else {
+                manageMenu.visibility = View.VISIBLE
+                arrowIcon.rotation = 180f
+            }
+            isExpanded = !isExpanded
         }
 
-        findViewById<Button>(R.id.btnVotes).setOnClickListener {
-            showToast("Votes clicked")
+        btnDashboard = findViewById(R.id.btnDashboard)
+        btnVotes = findViewById(R.id.btnVotes)
+        btnPositions = findViewById(R.id.btnPositions)
+        btnCandidates = findViewById(R.id.btnCandidates)
+        btnElectionTitle = findViewById(R.id.btnElectionTitle)
+
+        val fragmentContainer = findViewById<View>(R.id.fragmentContainer)
+        val dashboardContainer = findViewById<LinearLayout>(R.id.dashboardContainer)
+
+        // Show PositionsFragment
+        btnPositions.setOnClickListener {
+            dashboardContainer.visibility = View.GONE
+            fragmentContainer.visibility = View.VISIBLE
+
+            supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace(R.id.fragmentContainer, PositionsFragment())
+            }
+
+            manageMenu.visibility = View.GONE
+            arrowIcon.rotation = 0f
+            isExpanded = false
         }
 
-        findViewById<Button>(R.id.btnPositions).setOnClickListener {
-            openFragment(PositionsFragment())
+        // Show Dashboard again
+        btnDashboard.setOnClickListener {
+            dashboardContainer.visibility = View.VISIBLE
+            fragmentContainer.visibility = View.GONE
+
+            manageMenu.visibility = View.GONE
+            arrowIcon.rotation = 0f
+            isExpanded = false
         }
 
-        findViewById<Button>(R.id.btnCandidates).setOnClickListener {
-            openFragment(CandidatesFragment())
-        }
-
-        findViewById<Button>(R.id.btnBallotPosition).setOnClickListener {
-            showToast("Ballot Position clicked")
-        }
-
-        findViewById<Button>(R.id.btnElectionTitle).setOnClickListener {
-            showToast("Election Title clicked")
-        }
-
-        // Print button on dashboard
-        findViewById<Button>(R.id.btnPrint).setOnClickListener {
-            showToast("Print pressed")
-        }
+        // Other buttons can still handle fragments or actions
     }
-
-    // Show simple Toast
-    private fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    // Open a fragment
-    private fun openFragment(fragment: Fragment) {
-        dashboardView.visibility = View.GONE
-        fragmentContainer.visibility = View.VISIBLE
-
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, fragment)
-            .addToBackStack(null)
-            .commit()
-
-        drawerLayout.closeDrawers()
-    }
-
-    private fun showDashboard() {
-        fragmentContainer.visibility = View.GONE
-        dashboardView.visibility = View.VISIBLE
-        supportFragmentManager.popBackStack(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE)
-    }
-
-    // Handle back press
-    override fun onBackPressed() {
-        if (fragmentContainer.visibility == View.VISIBLE) {
-            showDashboard()
-        } else {
-            super.onBackPressed()
-        }
-    }
-
 }

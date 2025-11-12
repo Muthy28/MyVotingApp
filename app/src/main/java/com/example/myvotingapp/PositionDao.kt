@@ -8,6 +8,10 @@ interface PositionDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(position: Position): Long
 
+    @Update
+    suspend fun update(position: Position)
+
+
     @Query("SELECT * FROM positions")
     fun getAllPositionsFlow(): Flow<List<Position>>
 

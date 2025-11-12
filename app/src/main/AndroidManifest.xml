@@ -15,7 +15,7 @@
 
         <!-- ✅ Launcher Activity -->
         <activity
-            android:name=".LoginActivity"
+            android:name=".FirstScreenActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.MyVotingApp">
@@ -27,16 +27,17 @@
 
         <!-- ✅ Other Activities -->
         <activity
+            android:name=".LoginActivity"
+            android:theme="@style/Theme.MyVotingApp" />
+        <activity
             android:name=".RegisterActivity"
             android:theme="@style/Theme.MyVotingApp" />
         <activity
-            android:name=".VoterDashboardActivity"
+            android:name=".UserActivity"
             android:theme="@style/Theme.MyVotingApp" />
         <activity
             android:name=".AdminDashboardActivity"
             android:theme="@style/Theme.MyVotingApp" />
-
-
 
     </application>
 

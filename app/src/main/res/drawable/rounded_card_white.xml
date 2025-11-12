@@ -1,0 +1,7 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#FFFFFF"/>
+    <corners android:topLeftRadius="24dp" android:topRightRadius="24dp"
+        android:bottomLeftRadius="24dp" android:bottomRightRadius="24dp"/>
+    <padding android:left="0dp" android:top="0dp" android:right="0dp" android:bottom="0dp"/>
+    <size android:height="100dp"/> <!-- Replace with the desired fixed height -->
+</shape>

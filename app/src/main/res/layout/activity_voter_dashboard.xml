@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:gravity="center_horizontal"
     android:padding="20dp"
-    tools:context=".VoterDashboardActivity">
+    tools:context=".UserActivity">
 
     <TextView
         android:text="Voting Categories"
