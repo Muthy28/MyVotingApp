@@ -4,21 +4,29 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import androidx.compose.foundation.text2.input.insert
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Spinner
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
+import androidx.activity.viewModels
+import com.example.myvotingapp.CandidatesViewModel
+import com.example.myvotingapp.Position
+import com.example.myvotingapp.R
 
 class CandidatesFragment : Fragment() {
 
-    private lateinit var candidateDao: CandidateDao
-    private lateinit var positionDao: PositionDao
+    // Initialize ViewModel using the recommended 'by viewModels()' delegate
+    private val viewModel: CandidatesViewModel by viewModels()
 
+    // Declare views
     private lateinit var edtCandidateName: EditText
     private lateinit var spinnerPositions: Spinner
     private lateinit var btnAddCandidate: Button
 
+    // Local cache for the positions list to easily find the ID of the selected item
     private var positionsList = listOf<Position>()
     private var selectedPositionId: Long? = null
 
@@ -26,76 +34,78 @@ class CandidatesFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_candidates, container, false)
 
-        // Initialize DAOs
-        val db = AppDatabase.getDatabase(requireContext())
-        candidateDao = db.candidateDao()
-        positionDao = db.positionDao()
-
-        // Initialize Views
+        // Initialize Views using the inflated view
         edtCandidateName = view.findViewById(R.id.edtCandidateName)
         spinnerPositions = view.findViewById(R.id.spinnerPositions)
         btnAddCandidate = view.findViewById(R.id.btnAddCandidate)
 
-        // Load positions into the spinner
-        loadPositions()
-
-        // Set button listener
-        btnAddCandidate.setOnClickListener { addCandidate() }
-
-        // TODO: Implement image selection logic for btnSelectPhoto and imgCandidatePhoto
-
         return view
     }
 
-    private fun loadPositions() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            positionDao.getAllPositionsFlow().collect { dbPositions ->
-                positionsList = dbPositions
-                val positionNames = dbPositions.map { it.name }
-                val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, positionNames)
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spinnerPositions.adapter = adapter
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-                spinnerPositions.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                        // Get the ID of the selected position
-                        selectedPositionId = positionsList[position].id
-                    }
-                    override fun onNothingSelected(parent: AdapterView<*>?) {
-                        selectedPositionId = null
-                    }
-                }
+        // Centralize the setup of UI observers and event listeners
+        setupObservers()
+        setupListeners()
+    }
+
+    private fun setupObservers() {
+        // Observer for the list of electoral positions.
+        // This will automatically update the spinner whenever the data changes in the database.
+        viewModel.allPositions.observe(viewLifecycleOwner) { dbPositions ->
+            // Update local cache
+            positionsList = dbPositions
+            // Extract just the names for display in the spinner
+            val positionNames = dbPositions.map { it.name }
+
+            // Create and set the adapter for the spinner
+            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, positionNames)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinnerPositions.adapter = adapter
+        }
+
+        // Observer for toast messages from the ViewModel.
+        // This allows the ViewModel to request a toast message (e.g., for success or error)
+        // without holding a reference to the UI context.
+        viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
+            message?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                // Inform the ViewModel that the message has been shown to prevent it from re-appearing on screen rotation.
+                viewModel.onToastMessageShown()
             }
         }
     }
 
-    private fun addCandidate() {
-        val name = edtCandidateName.text.toString().trim()
+    private fun setupListeners() {
+        // Listener for the "Add Candidate" button.
+        btnAddCandidate.setOnClickListener {
+            val candidateName = edtCandidateName.text.toString().trim()
 
-        if (name.isEmpty()) {
-            Toast.makeText(requireContext(), "Please enter a candidate name", Toast.LENGTH_SHORT).show()
-            return
-        }
+            // Delegate the logic of adding a candidate to the ViewModel
+            viewModel.addCandidate(candidateName, selectedPositionId)
 
-        if (selectedPositionId == null) {
-            Toast.makeText(requireContext(), "Please select a position", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            val newCandidate = Candidate(
-                name = name,
-                positionId = selectedPositionId!!,
-                manifesto = "Default manifesto.", // Placeholder
-                imageUrl = null // Placeholder for photo URI
-            )
-            candidateDao.insertCandidate(newCandidate)
-
-            Toast.makeText(requireContext(), "Candidate '$name' added successfully!", Toast.LENGTH_LONG).show()
+            // Clear the input field after attempting to add
             edtCandidateName.text.clear()
-            spinnerPositions.setSelection(0)
+        }
+
+        // Listener for spinner item selections.
+        spinnerPositions.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                // When an item is selected, find the corresponding Position object
+                // from our local list and store its ID.
+                if (positionsList.isNotEmpty()) {
+                    selectedPositionId = positionsList[position].positionId
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // If nothing is selected, ensure the ID is null.
+                selectedPositionId = null
+            }
         }
     }
 }
