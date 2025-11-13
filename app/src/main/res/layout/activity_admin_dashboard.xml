@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -16,249 +16,22 @@
         android:layout_height="?attr/actionBarSize"
         android:background="#1976D2"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:title="Admin Dashboard">
-
-        <!-- Dropdown arrow at top-right -->
-        <LinearLayout
-            android:id="@+id/manageDropdown"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingEnd="16dp"
-            android:layout_gravity="end"
-            android:clickable="true"
-            android:focusable="true">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Menu"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:layout_marginEnd="4dp"/>
-
-            <ImageView
-                android:id="@+id/arrowIcon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@android:drawable/arrow_down_float"
-                android:tint="#FFFFFF"/>
-        </LinearLayout>
-    </androidx.appcompat.widget.Toolbar>
-
-    <!-- Dropdown Menu -->
-    <LinearLayout
-        android:id="@+id/manageMenu"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone"
-        android:padding="12dp"
-        android:background="#263238">
-
-        <Button
-            android:id="@+id/btnDashboard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Dashboard"
-            android:textAllCaps="false"
-            android:backgroundTint="#37474F"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="4dp"/>
-
-        <Button
-            android:id="@+id/btnVotes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Votes"
-            android:textAllCaps="false"
-            android:backgroundTint="#37474F"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="4dp"/>
-
-        <Button
-            android:id="@+id/btnPositions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Positions"
-            android:textAllCaps="false"
-            android:backgroundTint="#37474F"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="4dp"/>
-
-        <Button
-            android:id="@+id/btnCandidates"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Candidates"
-            android:textAllCaps="false"
-            android:backgroundTint="#37474F"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="4dp"/>
-
-        <Button
-            android:id="@+id/btnElectionTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Election Title"
-            android:textAllCaps="false"
-            android:backgroundTint="#37474F"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="4dp"/>
-    </LinearLayout>
+        android:title="Admin Dashboard" />
 
     <!-- Fragment container -->
     <FrameLayout
         android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="12dp"
-        android:visibility="gone"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_margin="12dp"/>
 
-    <!-- Dashboard container (wrap ScrollView) -->
-    <LinearLayout
-        android:id="@+id/dashboardContainer"
+    <!-- Bottom Navigation Bar -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="12dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center">
-
-                <!-- ROW 1 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="2"
-                    android:gravity="center">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="160dp"
-                        android:layout_weight="1"
-                        android:background="#4CAF50"
-                        android:orientation="vertical"
-                        android:padding="16dp"
-                        android:layout_margin="6dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="No. of Positions"
-                            android:textColor="#FFFFFF"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="10dp" />
-
-                        <Button
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="More Info →"
-                            android:backgroundTint="#388E3C"
-                            android:textColor="#FFFFFF" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="160dp"
-                        android:layout_weight="1"
-                        android:background="#03A9F4"
-                        android:orientation="vertical"
-                        android:padding="16dp"
-                        android:layout_margin="6dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="No. of Votes"
-                            android:textColor="#FFFFFF"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="10dp" />
-
-                        <Button
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="More Info →"
-                            android:backgroundTint="#0288D1"
-                            android:textColor="#FFFFFF" />
-                    </LinearLayout>
-                </LinearLayout>
-
-                <!-- ROW 2 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="2"
-                    android:gravity="center">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="160dp"
-                        android:layout_weight="1"
-                        android:background="#FF9800"
-                        android:orientation="vertical"
-                        android:padding="16dp"
-                        android:layout_margin="6dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="No. of Candidates"
-                            android:textColor="#FFFFFF"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="10dp" />
-
-                        <Button
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="More Info →"
-                            android:backgroundTint="#F57C00"
-                            android:textColor="#FFFFFF" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="160dp"
-                        android:layout_weight="1"
-                        android:background="#9C27B0"
-                        android:orientation="vertical"
-                        android:padding="16dp"
-                        android:layout_margin="6dp">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="No. of Voters"
-                            android:textColor="#FFFFFF"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:layout_marginBottom="10dp" />
-
-                        <Button
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="More Info →"
-                            android:backgroundTint="#7B1FA2"
-                            android:textColor="#FFFFFF" />
-                    </LinearLayout>
-                </LinearLayout>
-
-            </LinearLayout>
-        </ScrollView>
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        app:menu="@menu/admin_bottom_nav_menu" />
 
 </LinearLayout>
