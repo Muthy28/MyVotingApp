@@ -2,13 +2,16 @@ package com.example.myvotingapp
 
 import android.app.AlertDialog
 import android.content.Intent
-import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.myvotingapp.databinding.FragmentProfileBinding
@@ -20,6 +23,7 @@ class ProfileFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var db: AppDatabase
     private var loggedInVoterId: String = ""
+    private var isPasswordVisible = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,7 +42,7 @@ class ProfileFragment : Fragment() {
 
         loadVoterProfile()
         setupClickListeners()
-        setupDarkModeToggle()
+        setupPasswordToggle()
     }
 
     private fun loadVoterProfile() {
@@ -54,16 +58,17 @@ class ProfileFragment : Fragment() {
 
     private fun updateUI(voter: Voter) {
         binding.tvName.text = "${voter.firstName} ${voter.lastName}"
-        binding.tvIdNumber.text = voter.idNumber
         binding.tvFirstName.text = voter.firstName
         binding.tvLastName.text = voter.lastName
         binding.tvMobile.text = voter.mobile
+        binding.tvPassword.text = "xxxxxxxxxxx" // Show as xxxxxxxxxxx in personal info
 
         // Set edit text values
         binding.etIdNumber.setText(voter.idNumber)
         binding.etFirstName.setText(voter.firstName)
         binding.etLastName.setText(voter.lastName)
         binding.etMobile.setText(voter.mobile)
+        binding.etPassword.setText(voter.password) // Show actual password in edit mode
     }
 
     private fun setupClickListeners() {
@@ -84,8 +89,9 @@ class ProfileFragment : Fragment() {
         val firstName = binding.etFirstName.text.toString().trim()
         val lastName = binding.etLastName.text.toString().trim()
         val mobile = binding.etMobile.text.toString().trim()
+        val password = binding.etPassword.text.toString().trim()
 
-        if (firstName.isEmpty() || lastName.isEmpty() || mobile.isEmpty()) {
+        if (firstName.isEmpty() || lastName.isEmpty() || mobile.isEmpty() || password.isEmpty()) {
             Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
             return
         }
@@ -102,7 +108,8 @@ class ProfileFragment : Fragment() {
                     val updatedVoter = existingVoter.copy(
                         firstName = firstName,
                         lastName = lastName,
-                        mobile = mobile
+                        mobile = mobile,
+                        password = password
                     )
 
                     db.voterDao().updateVoter(updatedVoter)
@@ -121,40 +128,27 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    private fun setupDarkModeToggle() {
-        // Set initial icon based on current theme
-        updateDarkModeIcon()
+    private fun setupPasswordToggle() {
+        binding.btnTogglePassword.setOnClickListener {
+            isPasswordVisible = !isPasswordVisible
 
-        binding.btnDarkMode.setOnClickListener {
-            toggleDarkMode()
+            if (isPasswordVisible) {
+                // Show password
+                binding.etPassword.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                binding.btnTogglePassword.setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
+            } else {
+                // Hide password
+                binding.etPassword.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+                binding.btnTogglePassword.setImageResource(android.R.drawable.ic_menu_view)
+            }
+
+            // Move cursor to end
+            binding.etPassword.setSelection(binding.etPassword.text.length)
         }
-    }
-
-    private fun toggleDarkMode() {
-        val currentNightMode = requireContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        when (currentNightMode) {
-            Configuration.UI_MODE_NIGHT_NO -> {
-                // Switch to dark mode
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            }
-            Configuration.UI_MODE_NIGHT_YES -> {
-                // Switch to light mode
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
-            else -> {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-            }
-        }
-    }
-
-    private fun updateDarkModeIcon() {
-        val currentNightMode = requireContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        // You can create different icons for light/dark mode if needed
-        // For now using same icon
     }
 
     private fun showLogoutConfirmation() {
-        AlertDialog.Builder(requireContext())
+        val alertDialog = AlertDialog.Builder(requireContext())
             .setTitle("Logout")
             .setMessage("Are you sure you want to logout?")
             .setPositiveButton("Logout") { dialog, which ->
@@ -163,7 +157,35 @@ class ProfileFragment : Fragment() {
             .setNegativeButton("Cancel") { dialog, which ->
                 dialog.dismiss()
             }
-            .show()
+            .create()
+
+        alertDialog.setOnShowListener {
+            // Set white background
+            alertDialog.window?.setBackgroundDrawableResource(android.R.color.white)
+
+            // Get the buttons
+            val positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            val negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+
+            // Set button colors
+            positiveButton.setTextColor(Color.RED)
+            negativeButton.setTextColor(Color.GREEN)
+
+            // Make title bold and black
+            val titleTextView = alertDialog.findViewById<TextView>(android.R.id.title)
+            titleTextView?.let {
+                it.setTextColor(Color.BLACK)
+                val spannableTitle = SpannableString(it.text)
+                spannableTitle.setSpan(StyleSpan(android.graphics.Typeface.BOLD), 0, spannableTitle.length, 0)
+                it.text = spannableTitle
+            }
+
+            // Make message black
+            val messageTextView = alertDialog.findViewById<TextView>(android.R.id.message)
+            messageTextView?.setTextColor(Color.BLACK)
+        }
+
+        alertDialog.show()
     }
 
     private fun performLogout() {
@@ -183,17 +205,45 @@ class ProfileFragment : Fragment() {
     }
 
     private fun showDeleteAccountConfirmation() {
-        AlertDialog.Builder(requireContext())
+        val alertDialog = AlertDialog.Builder(requireContext())
             .setTitle("Delete Account")
             .setMessage("Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently lost.")
-            .setPositiveButton("Delete") { dialog, which ->
+            .setPositiveButton("Yes") { dialog, which ->
                 deleteAccount()
             }
-            .setNegativeButton("Cancel") { dialog, which ->
+            .setNegativeButton("No") { dialog, which ->
                 dialog.dismiss()
             }
             .setIcon(android.R.drawable.ic_dialog_alert)
-            .show()
+            .create()
+
+        alertDialog.setOnShowListener {
+            // Set white background
+            alertDialog.window?.setBackgroundDrawableResource(android.R.color.white)
+
+            // Get the buttons
+            val positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            val negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+
+            // Set button colors
+            positiveButton.setTextColor(Color.RED)
+            negativeButton.setTextColor(Color.GREEN)
+
+            // Make title bold and black
+            val titleTextView = alertDialog.findViewById<TextView>(android.R.id.title)
+            titleTextView?.let {
+                it.setTextColor(Color.BLACK)
+                val spannableTitle = SpannableString(it.text)
+                spannableTitle.setSpan(StyleSpan(android.graphics.Typeface.BOLD), 0, spannableTitle.length, 0)
+                it.text = spannableTitle
+            }
+
+            // Make message black
+            val messageTextView = alertDialog.findViewById<TextView>(android.R.id.message)
+            messageTextView?.setTextColor(Color.BLACK)
+        }
+
+        alertDialog.show()
     }
 
     private fun deleteAccount() {

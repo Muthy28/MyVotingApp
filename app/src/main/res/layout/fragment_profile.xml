@@ -10,34 +10,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Top Bar with Dark Mode and Logout -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24px">
-
-            <!-- Dark Mode Toggle (Top Left) -->
-            <ImageButton
-                android:id="@+id/btnDarkMode"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_alignParentStart="true"
-                android:background="@drawable/ic_dark_mode"
-                android:contentDescription="Dark mode toggle" />
-
-            <!-- Logout Button (Top Right) -->
-            <Button
-                android:id="@+id/btnLogout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:background="@drawable/btn_logout"
-                android:padding="12dp"
-                android:text="Logout"
-                android:textColor="#FF0000" />
-
-        </RelativeLayout>
-
         <!-- Profile Header -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -81,30 +53,11 @@
                 android:textColor="#4B0082"
                 android:textSize="16sp"
                 android:textStyle="bold" />
-
-            <!-- ID Number (Read-only) -->
-            <LinearLayout
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="ID Number:"
-                    android:textColor="#666666" />
-
-                <TextView
-                    android:id="@+id/tvIdNumber"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="12345678"
-                    android:textColor="#4B0082"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                android:layout_height="2dp"
+                android:background="#4B0082"
+                android:layout_marginBottom="16dp" />
 
             <!-- First Name -->
             <LinearLayout
@@ -118,7 +71,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="First Name:"
-                    android:textColor="#666666" />
+                    android:textColor="#666666"
+                    android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/tvFirstName"
@@ -142,7 +96,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Last Name:"
-                    android:textColor="#666666" />
+                    android:textColor="#666666"
+                    android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/tvLastName"
@@ -158,7 +113,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="12dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -166,7 +121,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Mobile:"
-                    android:textColor="#666666" />
+                    android:textColor="#666666"
+                    android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/tvMobile"
@@ -174,6 +130,31 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="0000000000"
+                    android:textColor="#4B0082"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Password (Hidden) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Password:"
+                    android:textColor="#666666"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/tvPassword"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="xxxxxxxxxxx"
                     android:textColor="#4B0082"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -217,7 +198,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="ID Number:"
-                    android:textColor="#666666" />
+                    android:textColor="#666666"
+                    android:textStyle="bold"/>
 
                 <EditText
                     android:id="@+id/etIdNumber"
@@ -243,7 +225,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="First Name:"
-                    android:textColor="#666666" />
+                    android:textColor="#666666"
+                    android:textStyle="bold"/>
 
                 <EditText
                     android:id="@+id/etFirstName"
@@ -268,7 +251,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Last Name:"
-                    android:textColor="#666666" />
+                    android:textColor="#666666"
+                    android:textStyle="bold"/>
 
                 <EditText
                     android:id="@+id/etLastName"
@@ -285,7 +269,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="12dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -293,7 +277,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Mobile:"
-                    android:textColor="#666666" />
+                    android:textColor="#666666"
+                    android:textStyle="bold"/>
 
                 <EditText
                     android:id="@+id/etMobile"
@@ -307,28 +292,90 @@
                     android:textColor="#4B0082" />
             </LinearLayout>
 
+            <!-- Password with Eye Icon -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Password:"
+                    android:textColor="#666666"
+                    android:textStyle="bold"/>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1">
+
+                    <EditText
+                        android:id="@+id/etPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/edit_text_background"
+                        android:inputType="textPassword"
+                        android:padding="12dp"
+                        android:text="password123"
+                        android:textColor="#4B0082" />
+
+                    <ImageButton
+                        android:id="@+id/btnTogglePassword"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="12dp"
+                        android:background="@android:drawable/ic_menu_view"
+                        android:contentDescription="Toggle password visibility" />
+                </RelativeLayout>
+            </LinearLayout>
+
             <!-- Save Changes Button -->
             <Button
                 android:id="@+id/btnSaveChanges"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/btn_primary"
+                android:background="@color/blue_pressed"
                 android:padding="16dp"
                 android:text="Save Changes"
                 android:textColor="#FFFFFF" />
         </LinearLayout>
 
-        <!-- Delete Account Button (Bottom Right) -->
-        <Button
-            android:id="@+id/btnDeleteAccount"
-            android:layout_width="wrap_content"
+        <!-- Logout Button (Bottom Left) and Delete Account Button (Bottom Right) -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
             android:layout_marginTop="24dp"
-            android:background="@drawable/btn_delete"
-            android:padding="16dp"
-            android:text="Delete Account"
-            android:textColor="#FFFFFF" />
+            android:orientation="horizontal">
+
+            <!-- Logout Button (Bottom Left) -->
+            <Button
+                android:id="@+id/btnLogout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/btn_logout"
+                android:padding="16dp"
+                android:text="Logout"
+                android:textColor="#FF0000" />
+
+            <!-- Delete Account Button (Bottom Right) -->
+            <Button
+                android:id="@+id/btnDeleteAccount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/btn_delete"
+                android:padding="16dp"
+                android:text="Delete Account"
+                android:textColor="#FFFFFF" />
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>
