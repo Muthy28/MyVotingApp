@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="12dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <!-- ROW 1 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:gravity="center">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="160dp"
+                android:layout_weight="1"
+                android:background="#4CAF50"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_margin="6dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="No. of Positions"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="10dp" />
+
+                <Button
+                    android:id="@+id/btnPositionsInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="More Info →"
+                    android:backgroundTint="#388E3C"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="160dp"
+                android:layout_weight="1"
+                android:background="#03A9F4"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_margin="6dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="No. of Votes"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="10dp" />
+
+                <Button
+                    android:id="@+id/btnVotesInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="More Info →"
+                    android:backgroundTint="#0288D1"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ROW 2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:gravity="center">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="160dp"
+                android:layout_weight="1"
+                android:background="#FF9800"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_margin="6dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="No. of Candidates"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="10dp" />
+
+                <Button
+                    android:id="@+id/btnCandidatesInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="More Info →"
+                    android:backgroundTint="#F57C00"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="160dp"
+                android:layout_weight="1"
+                android:background="#9C27B0"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_margin="6dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="No. of Voters"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="10dp" />
+
+                <Button
+                    android:id="@+id/btnVotersInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="More Info →"
+                    android:backgroundTint="#7B1FA2"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Results Display Area -->
+        <LinearLayout
+            android:id="@+id/resultsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/tvResultsTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Results"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#4B0082"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"/>
+
+            <TextView
+                android:id="@+id/tvResultsContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="14sp"
+                android:textColor="#333333"
+                android:lineSpacingExtra="4dp"
+                android:padding="16dp"
+                android:background="@drawable/bg_candidate_item"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
