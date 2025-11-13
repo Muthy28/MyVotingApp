@@ -7,36 +7,24 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Spinner
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
 
 class CandidatesFragment : Fragment() {
 
     private val viewModel: CandidatesViewModel by viewModels()
 
-    // Declare views
-    private lateinit var edtCandidateName: EditText
-    private lateinit var edtManifesto: EditText
-    private lateinit var spinnerPositions: Spinner
-    private lateinit var imgCandidatePhoto: ImageView
-    private lateinit var btnSelectPhoto: Button
     private lateinit var btnAddCandidate: Button
+    private lateinit var btnUpdateCandidate: Button
+    private lateinit var btnDeleteCandidate: Button
+    private lateinit var formContainer: LinearLayout
+    private lateinit var tvFormTitle: TextView
+    private lateinit var tvFormHint: TextView
 
-    // Local cache for the positions list to easily find the ID of the selected item
-    private var positionsList = listOf<Position>()
-    private var selectedPositionId: Long? = null
-    private var selectedImageUri: Uri? = null
+    // Store references to current form views for image handling
+    private var currentImageView: ImageView? = null
 
     // Activity result launcher for image selection
     private val imagePickerLauncher = registerForActivityResult(
@@ -45,8 +33,10 @@ class CandidatesFragment : Fragment() {
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
             data?.data?.let { uri ->
-                selectedImageUri = uri
-                imgCandidatePhoto.setImageURI(uri)
+                // Update the image view with selected image
+                currentImageView?.let { imageView ->
+                    viewModel.setSelectedImage(uri, imageView)
+                }
             }
         }
     }
@@ -55,109 +45,127 @@ class CandidatesFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_candidates, container, false)
-
-        edtCandidateName = view.findViewById(R.id.edtCandidateName)
-        edtManifesto = view.findViewById(R.id.edtManifesto)
-        spinnerPositions = view.findViewById(R.id.spinnerPositions)
-        imgCandidatePhoto = view.findViewById(R.id.imgCandidatePhoto)
-        btnSelectPhoto = view.findViewById(R.id.btnSelectPhoto)
-        btnAddCandidate = view.findViewById(R.id.btnAddCandidate)
-        return view
+        return inflater.inflate(R.layout.fragment_candidates, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        initializeViews(view)
+        setupClickListeners()
         setupObservers()
-        setupListeners()
+    }
+
+    private fun initializeViews(view: View) {
+        btnAddCandidate = view.findViewById(R.id.btnAddCandidate)
+        btnUpdateCandidate = view.findViewById(R.id.btnUpdateCandidate)
+        btnDeleteCandidate = view.findViewById(R.id.btnDeleteCandidate)
+        formContainer = view.findViewById(R.id.formContainer)
+        tvFormTitle = view.findViewById(R.id.tvFormTitle)
+        tvFormHint = view.findViewById(R.id.tvFormHint)
+    }
+
+    private fun setupClickListeners() {
+        btnAddCandidate.setOnClickListener {
+            showForm("Add Candidate")
+            viewModel.showAddCandidateForm()
+        }
+
+        btnUpdateCandidate.setOnClickListener {
+            showForm("Update Candidate")
+            viewModel.showUpdateCandidateForm()
+        }
+
+        btnDeleteCandidate.setOnClickListener {
+            showForm("Delete Candidate")
+            viewModel.showDeleteCandidateForm()
+        }
     }
 
     private fun setupObservers() {
-        viewModel.allPositions.observe(viewLifecycleOwner) { dbPositions ->
-            positionsList = dbPositions
-            val positionNames = dbPositions.map { it.name }
+        viewModel.formContent.observe(viewLifecycleOwner) { formView ->
+            // Clear previous form content (except the title and hint)
+            formContainer.removeAllViews()
 
-            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, positionNames)
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spinnerPositions.adapter = adapter
+            // Add the title back
+            formContainer.addView(tvFormTitle)
+
+            // Add the new form content
+            if (formView != null) {
+                formContainer.addView(formView)
+                tvFormHint.visibility = View.GONE
+
+                // Set up image selection for the current form
+                setupImageSelection(formView)
+            } else {
+                tvFormHint.visibility = View.VISIBLE
+            }
         }
 
+        // Observe toast messages and handle special cases
         viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
             message?.let {
-                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
-                viewModel.onToastMessageShown()
-            }
-        }
-    }
-
-    private fun setupListeners() {
-        btnAddCandidate.setOnClickListener {
-            val candidateName = edtCandidateName.text.toString().trim()
-            val manifesto = edtManifesto.text.toString().trim()
-
-            if (candidateName.isBlank() || manifesto.isBlank() || selectedPositionId == null) {
-                Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            // Copy image to internal storage and get file path
-            val imagePath = selectedImageUri?.let { uri ->
-                copyImageToInternalStorage(uri)
-            }
-
-            viewModel.addCandidate(candidateName, selectedPositionId!!, manifesto, imagePath)
-
-            // Clear the input fields after attempting to add
-            edtCandidateName.text.clear()
-            edtManifesto.text.clear()
-            selectedImageUri = null
-            imgCandidatePhoto.setImageResource(R.drawable.ic_launcher_foreground)
-        }
-
-        btnSelectPhoto.setOnClickListener {
-            openImagePicker()
-        }
-
-        spinnerPositions.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (positionsList.isNotEmpty()) {
-                    selectedPositionId = positionsList[position].positionId
+                when {
+                    it == "SELECT_PHOTO_ADD" -> openImagePickerForCurrentForm()
+                    it == "SELECT_PHOTO_UPDATE" -> openImagePickerForCurrentForm()
+                    it.startsWith("Error:") -> {
+                        Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                        viewModel.onToastMessageShown()
+                    }
+                    else -> {
+                        Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                        viewModel.onToastMessageShown()
+                    }
                 }
             }
+        }
+    }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                selectedPositionId = null
+    private fun setupImageSelection(formView: View) {
+        // Find the image view and select photo button in the current form
+        val imgCandidatePhoto = formView.findViewById<ImageView?>(R.id.imgCandidatePhoto)
+        val btnSelectPhoto = formView.findViewById<Button?>(R.id.btnSelectPhoto)
+
+        currentImageView = imgCandidatePhoto
+
+        btnSelectPhoto?.setOnClickListener {
+            // Use the public methods to trigger image selection
+            val formTitle = tvFormTitle.text.toString()
+            if (formTitle.contains("Add", ignoreCase = true)) {
+                viewModel.triggerAddPhotoSelection()
+            } else if (formTitle.contains("Update", ignoreCase = true)) {
+                viewModel.triggerUpdatePhotoSelection()
             }
         }
     }
 
-    private fun openImagePicker() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT)
-        intent.type = "image/*"
-        imagePickerLauncher.launch(intent)
-    }
+    private fun openImagePickerForCurrentForm() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "image/*"
+            addCategory(Intent.CATEGORY_OPENABLE)
+        }
 
-    private fun copyImageToInternalStorage(uri: Uri): String? {
-        return try {
-            val inputStream: InputStream? = requireContext().contentResolver.openInputStream(uri)
-            val directory = File(requireContext().filesDir, "candidate_images")
-            if (!directory.exists()) {
-                directory.mkdirs()
-            }
+        // Create a chooser to ensure user can select from multiple apps
+        val chooser = Intent.createChooser(intent, "Select Candidate Photo")
 
-            val file = File(directory, "candidate_${System.currentTimeMillis()}.jpg")
-
-            inputStream?.use { input ->
-                FileOutputStream(file).use { output ->
-                    input.copyTo(output)
-                }
-            }
-
-            file.absolutePath
+        try {
+            imagePickerLauncher.launch(chooser)
         } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(requireContext(), "Failed to save image", Toast.LENGTH_SHORT).show()
-            null
+            Toast.makeText(requireContext(), "Error opening image picker: ${e.message}", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun showForm(title: String) {
+        tvFormTitle.text = title
+        formContainer.visibility = View.VISIBLE
+        tvFormHint.text = "Loading form..."
+        // Reset current image view when showing new form
+        currentImageView = null
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Clean up references
+        currentImageView = null
     }
 }

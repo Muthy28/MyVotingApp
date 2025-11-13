@@ -1,85 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    android:background="@android:color/white">
+    android:background="#F5F5F5">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:gravity="center">
 
+        <!-- Header -->
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Manage Candidates"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:layout_marginBottom="16dp"/>
+            android:textColor="#4B0082"
+            android:gravity="center"
+            android:layout_marginBottom="32dp" />
 
-        <!-- Candidate Name Input -->
-        <EditText
-            android:id="@+id/edtCandidateName"
+        <!-- Action Buttons Row -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Candidate Name"
-            android:inputType="textPersonName"/>
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:weightSum="3"
+            android:layout_marginBottom="24dp">
 
-        <!-- Position Selector -->
-        <Spinner
-            android:id="@+id/spinnerPositions"
+            <!-- Add Candidate Button -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="160dp"
+                android:layout_weight="1"
+                android:background="#4CAF50"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_margin="6dp"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Add Candidate"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_marginBottom="10dp" />
+
+                <Button
+                    android:id="@+id/btnAddCandidate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Add →"
+                    android:backgroundTint="#388E3C"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
+
+            <!-- Update Candidate Button -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="160dp"
+                android:layout_weight="1"
+                android:background="#FF9800"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_margin="6dp"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Update Candidate"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_marginBottom="10dp" />
+
+                <Button
+                    android:id="@+id/btnUpdateCandidate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Update →"
+                    android:textSize="12dp"
+                    android:backgroundTint="#F57C00"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
+
+            <!-- Delete Candidate Button -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="160dp"
+                android:layout_weight="1"
+                android:background="#F44336"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_margin="6dp"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Delete Candidate"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:layout_marginBottom="10dp" />
+
+                <Button
+                    android:id="@+id/btnDeleteCandidate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Delete →"
+                    android:backgroundTint="#D32F2F"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Form Container (initially hidden) -->
+        <LinearLayout
+            android:id="@+id/formContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:minHeight="48dp" />
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:background="@drawable/bg_rounded_card"
+            android:padding="16dp"
+            android:layout_marginTop="16dp">
 
-        <!-- Manifesto Input -->
-        <EditText
-            android:id="@+id/edtManifesto"
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:layout_marginTop="16dp"
-            android:hint="Candidate Manifesto"
-            android:inputType="textMultiLine"
-            android:gravity="top"
-            android:scrollbars="vertical"/>
+            <TextView
+                android:id="@+id/tvFormTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Candidate Form"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#4B0082"
+                android:gravity="center"
+                android:layout_marginBottom="16dp" />
 
-        <!-- Candidate Photo -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Candidate Photo"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
+            <!-- Form content will be dynamically added here -->
+            <TextView
+                android:id="@+id/tvFormHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Select an action to manage candidates"
+                android:textSize="16sp"
+                android:textColor="#666666"
+                android:gravity="center"
+                android:layout_marginTop="16dp" />
 
-        <ImageView
-            android:id="@+id/imgCandidatePhoto"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="8dp"
-            android:src="@drawable/ic_launcher_foreground"
-            android:scaleType="centerCrop"
-            android:background="@android:color/darker_gray"/>
-
-        <Button
-            android:id="@+id/btnSelectPhoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Select Photo"
-            android:layout_marginTop="8dp"/>
-
-        <!-- Add Candidate Button -->
-        <Button
-            android:id="@+id/btnAddCandidate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Add Candidate"
-            android:layout_marginTop="24dp"/>
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>
