@@ -97,15 +97,11 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_votes -> {
-                    // Show home for now (will implement later)
-                    showHomeContent()
-                    binding.bottomNav.selectedItemId = R.id.nav_home
+                    showVoteFragment()
                     true
                 }
                 R.id.nav_my_votes -> {
-                    // Show home for now (will implement later)
-                    showHomeContent()
-                    binding.bottomNav.selectedItemId = R.id.nav_home
+                    showMyVotesFragment()
                     true
                 }
                 R.id.nav_profile -> {
@@ -124,6 +120,32 @@ class MainActivity : AppCompatActivity() {
         // Make home content visible and hide fragment container
         binding.homeContent.visibility = View.VISIBLE
         binding.fragmentContainerView.visibility = View.GONE
+    }
+
+    private fun showVoteFragment() {
+        // Hide home content and show fragment container
+        binding.homeContent.visibility = View.GONE
+        binding.fragmentContainerView.visibility = View.VISIBLE
+
+        // Create and show VoteFragment
+        val voteFragment = VoteFragment.newInstance(loggedInVoterId)
+        supportFragmentManager.commit {
+            replace(R.id.fragmentContainerView, voteFragment)
+            addToBackStack("vote")
+        }
+    }
+
+    private fun showMyVotesFragment() {
+        // Hide home content and show fragment container
+        binding.homeContent.visibility = View.GONE
+        binding.fragmentContainerView.visibility = View.VISIBLE
+
+        // Create and show MyVotesFragment
+        val myVotesFragment = MyVotesFragment.newInstance(loggedInVoterId)
+        supportFragmentManager.commit {
+            replace(R.id.fragmentContainerView, myVotesFragment)
+            addToBackStack("my_votes")
+        }
     }
 
     private fun showProfileFragment() {

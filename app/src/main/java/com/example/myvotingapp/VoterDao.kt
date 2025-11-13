@@ -14,4 +14,7 @@ interface VoterDao {
 
     @Query("SELECT * FROM voters")
     fun getAllVotersFlow(): Flow<List<Voter>>
+
+    @Delete
+    suspend fun deleteVoter(voter: Voter)
 }

@@ -8,7 +8,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@Database(entities = [Voter::class, Position::class, Candidate::class, Vote::class], version = 1)
+@Database(entities = [Voter::class, Position::class, Candidate::class, Vote::class], version = 2) // ← CHANGED from 1 to 2
 abstract class AppDatabase : RoomDatabase() {
     abstract fun voterDao(): VoterDao
     abstract fun positionDao(): PositionDao
@@ -25,6 +25,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "my_voting_app_db"
                 )
+                    .fallbackToDestructiveMigration() // ← ADD THIS LINE
                     .addCallback(object : Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
                             super.onCreate(db)

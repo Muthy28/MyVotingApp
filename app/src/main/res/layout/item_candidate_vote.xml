@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:background="@drawable/bg_candidate_item"
+    android:layout_marginBottom="12dp">
+
+    <!-- Candidate Image Box on the left -->
+    <ImageView
+        android:id="@+id/ivCandidate"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:background="#E0E0E0"
+        android:scaleType="centerCrop"
+        android:contentDescription="Candidate Image"
+        android:layout_marginEnd="16dp"/>
+
+    <!-- Candidate Name -->
+    <TextView
+        android:id="@+id/tvCandidateName"
+        android:text="Candidate Name"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#4B0082"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_vertical"/>
+
+    <!-- Checkbox -->
+    <CheckBox
+        android:id="@+id/cbVote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"/>
+</LinearLayout>

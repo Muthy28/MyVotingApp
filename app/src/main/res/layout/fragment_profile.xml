@@ -178,6 +178,7 @@
                 android:layout_marginBottom="12dp"
                 android:padding="16dp"/>
 
+
             <Button
                 android:id="@+id/btnLogout"
                 android:layout_width="match_parent"
@@ -185,6 +186,16 @@
                 android:text="Logout"
                 android:background="@drawable/btn_logout"
                 android:textColor="#FF0000"
+                android:padding="16dp"/>
+
+            <Button
+                android:id="@+id/btnDeleteAccount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Delete Account"
+                android:background="@drawable/btn_delete"
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="12dp"
                 android:padding="16dp"/>
         </LinearLayout>
 
