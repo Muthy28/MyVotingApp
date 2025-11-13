@@ -2,12 +2,6 @@ package com.example.myvotingapp
 
 import android.app.Application
 import androidx.lifecycle.*
-import com.example.myvotingapp.AppDatabase
-import com.example.myvotingapp.CandidateDao
-import com.example.myvotingapp.PositionDao
-import com.example.myvotingapp.Candidate
-import com.example.myvotingapp.Position
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 // Use AndroidViewModel to get access to the application context for the database
@@ -31,7 +25,7 @@ class CandidatesViewModel(application: Application) : AndroidViewModel(applicati
         allPositions = positionDao.getAllPositionsFlow().asLiveData()
     }
 
-    fun addCandidate(name: String, positionId: Long?) {
+    fun addCandidate(name: String, positionId: Long?, manifesto: String, imageUrl: String?) {
         if (name.isBlank()) {
             _toastMessage.value = "Please enter a candidate name"
             return
@@ -40,14 +34,18 @@ class CandidatesViewModel(application: Application) : AndroidViewModel(applicati
             _toastMessage.value = "Please select a position"
             return
         }
+        if (manifesto.isBlank()) {
+            _toastMessage.value = "Please enter a manifesto"
+            return
+        }
 
         // Use viewModelScope to launch a coroutine that is automatically cancelled when the ViewModel is cleared
         viewModelScope.launch {
             val newCandidate = Candidate(
                 name = name,
                 positionId = positionId,
-                manifesto = "Default manifesto.",
-                imageUrl = null
+                manifesto = manifesto,
+                imageUrl = imageUrl
             )
             candidateDao.insertCandidate(newCandidate)
             _toastMessage.value = "Candidate '$name' added successfully!"

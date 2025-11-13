@@ -77,6 +77,20 @@ class AdminDashboardActivity : AppCompatActivity() {
             isExpanded = false
         }
 
+        btnCandidates.setOnClickListener {
+            dashboardContainer.visibility = View.GONE
+            fragmentContainer.visibility = View.VISIBLE
+
+            supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace(R.id.fragmentContainer, CandidatesFragment())
+            }
+
+            manageMenu.visibility = View.GONE
+            arrowIcon.rotation = 0f
+            isExpanded = false
+        }
+
         // Other buttons can still handle fragments or actions
     }
 }
