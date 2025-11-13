@@ -213,7 +213,7 @@
                     android:textColor="#666666" />
             </LinearLayout>
 
-            <!-- First Name -->
+            <!-- First Name (Disabled) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -234,12 +234,13 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@drawable/edit_text_background"
+                    android:enabled="false"
                     android:padding="12dp"
                     android:text="John"
-                    android:textColor="#4B0082" />
+                    android:textColor="#666666" />
             </LinearLayout>
 
-            <!-- Last Name -->
+            <!-- Last Name (Disabled) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -260,12 +261,13 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@drawable/edit_text_background"
+                    android:enabled="false"
                     android:padding="12dp"
                     android:text="Doe"
-                    android:textColor="#4B0082" />
+                    android:textColor="#666666" />
             </LinearLayout>
 
-            <!-- Mobile Number -->
+            <!-- Mobile Number (Disabled) -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -286,10 +288,11 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@drawable/edit_text_background"
+                    android:enabled="false"
                     android:inputType="phone"
                     android:padding="12dp"
                     android:text="0000000000"
-                    android:textColor="#4B0082" />
+                    android:textColor="#666666" />
             </LinearLayout>
 
             <!-- Password with Eye Icon -->
@@ -345,37 +348,29 @@
                 android:textColor="#FFFFFF" />
         </LinearLayout>
 
-        <!-- Logout Button (Bottom Left) and Delete Account Button (Bottom Right) -->
+        <!-- Logout Button (Bottom Right) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:orientation="horizontal">
 
-            <!-- Logout Button (Bottom Left) -->
-            <Button
-                android:id="@+id/btnLogout"
+            <!-- Spacer to push logout button to the right -->
+            <View
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
+                android:layout_weight="1" />
+
+            <!-- Logout Button (Bottom Right) -->
+            <Button
+                android:id="@+id/btnLogout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:background="@drawable/btn_logout"
                 android:padding="16dp"
                 android:text="Logout"
                 android:textColor="#FF0000" />
 
-            <!-- Delete Account Button (Bottom Right) -->
-            <Button
-                android:id="@+id/btnDeleteAccount"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                android:background="@drawable/btn_delete"
-                android:padding="16dp"
-                android:text="Delete Account"
-                android:textColor="#FFFFFF" />
         </LinearLayout>
-
     </LinearLayout>
 </ScrollView>

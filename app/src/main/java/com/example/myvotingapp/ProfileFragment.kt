@@ -80,24 +80,16 @@ class ProfileFragment : Fragment() {
             showLogoutConfirmation()
         }
 
-        binding.btnDeleteAccount.setOnClickListener {
-            showDeleteAccountConfirmation()
-        }
+        // Remove delete account click listener
     }
 
     private fun saveProfileChanges() {
-        val firstName = binding.etFirstName.text.toString().trim()
-        val lastName = binding.etLastName.text.toString().trim()
-        val mobile = binding.etMobile.text.toString().trim()
+        // Since First Name, Last Name, and Mobile are now disabled,
+        // only password can be changed
         val password = binding.etPassword.text.toString().trim()
 
-        if (firstName.isEmpty() || lastName.isEmpty() || mobile.isEmpty() || password.isEmpty()) {
-            Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        if (mobile.length != 10) {
-            Toast.makeText(requireContext(), "Please enter a valid 10-digit mobile number", Toast.LENGTH_SHORT).show()
+        if (password.isEmpty()) {
+            Toast.makeText(requireContext(), "Please enter a password", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -106,9 +98,6 @@ class ProfileFragment : Fragment() {
                 val voter = db.voterDao().getVoterById(loggedInVoterId)
                 voter?.let { existingVoter ->
                     val updatedVoter = existingVoter.copy(
-                        firstName = firstName,
-                        lastName = lastName,
-                        mobile = mobile,
                         password = password
                     )
 
@@ -117,12 +106,12 @@ class ProfileFragment : Fragment() {
                     requireActivity().runOnUiThread {
                         // Update the personal information display
                         updateUI(updatedVoter)
-                        Toast.makeText(requireContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Password updated successfully", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
                 requireActivity().runOnUiThread {
-                    Toast.makeText(requireContext(), "Error updating profile: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(requireContext(), "Error updating password: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
         }
@@ -202,79 +191,6 @@ class ProfileFragment : Fragment() {
         requireActivity().finish()
 
         Toast.makeText(requireContext(), "Logged out successfully", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun showDeleteAccountConfirmation() {
-        val alertDialog = AlertDialog.Builder(requireContext())
-            .setTitle("Delete Account")
-            .setMessage("Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently lost.")
-            .setPositiveButton("Yes") { dialog, which ->
-                deleteAccount()
-            }
-            .setNegativeButton("No") { dialog, which ->
-                dialog.dismiss()
-            }
-            .setIcon(android.R.drawable.ic_dialog_alert)
-            .create()
-
-        alertDialog.setOnShowListener {
-            // Set white background
-            alertDialog.window?.setBackgroundDrawableResource(android.R.color.white)
-
-            // Get the buttons
-            val positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            val negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-
-            // Set button colors
-            positiveButton.setTextColor(Color.RED)
-            negativeButton.setTextColor(Color.GREEN)
-
-            // Make title bold and black
-            val titleTextView = alertDialog.findViewById<TextView>(android.R.id.title)
-            titleTextView?.let {
-                it.setTextColor(Color.BLACK)
-                val spannableTitle = SpannableString(it.text)
-                spannableTitle.setSpan(StyleSpan(android.graphics.Typeface.BOLD), 0, spannableTitle.length, 0)
-                it.text = spannableTitle
-            }
-
-            // Make message black
-            val messageTextView = alertDialog.findViewById<TextView>(android.R.id.message)
-            messageTextView?.setTextColor(Color.BLACK)
-        }
-
-        alertDialog.show()
-    }
-
-    private fun deleteAccount() {
-        lifecycleScope.launch {
-            try {
-                val voter = db.voterDao().getVoterById(loggedInVoterId)
-                voter?.let {
-                    db.voterDao().deleteVoter(it)
-
-                    val sharedPreferences = requireContext().getSharedPreferences("MyVotingAppPrefs", android.content.Context.MODE_PRIVATE)
-                    val editor = sharedPreferences.edit()
-                    editor.putBoolean("remember_me", false)
-                    editor.remove("logged_in_user_id")
-                    editor.remove("is_admin")
-                    editor.apply()
-
-                    requireActivity().runOnUiThread {
-                        Toast.makeText(requireContext(), "Account deleted successfully", Toast.LENGTH_LONG).show()
-
-                        val intent = Intent(requireActivity(), FirstScreenActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
-                        requireActivity().finish()
-                    }
-                }
-            } catch (e: Exception) {
-                requireActivity().runOnUiThread {
-                    Toast.makeText(requireContext(), "Error deleting account: ${e.message}", Toast.LENGTH_LONG).show()
-                }
-            }
-        }
     }
 
     override fun onDestroyView() {
