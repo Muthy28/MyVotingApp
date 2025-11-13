@@ -1,13 +1,17 @@
 package com.example.myvotingapp
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myvotingapp.databinding.ActivityMainBinding
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -16,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var db: AppDatabase
     private lateinit var adapter: SectionCandidateAdapter
     private var loggedInVoterId: String = ""
+    private var searchJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,9 +34,76 @@ class MainActivity : AppCompatActivity() {
 
         setupUI()
         setupBottomNavigation()
+        setupSearchFunctionality()
 
         // Load home by default
         showHomeContent()
+    }
+
+    private fun setupSearchFunctionality() {
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                // Cancel previous search job
+                searchJob?.cancel()
+
+                val query = s.toString().trim()
+                if (binding.homeContent.visibility == View.VISIBLE) {
+                    filterCandidates(query)
+                }
+            }
+        })
+    }
+
+    private fun filterCandidates(query: String) {
+        searchJob?.cancel()
+        searchJob = lifecycleScope.launch {
+            try {
+                combine(
+                    db.positionDao().getAllPositionsFlow(),
+                    db.candidateDao().getAllCandidatesFlow()
+                ) { positions, candidates ->
+                    // Create a list with headers and candidates grouped by position
+                    val items = mutableListOf<ListItem>()
+
+                    positions.forEach { position ->
+                        val positionCandidates = candidates.filter { candidate ->
+                            candidate.positionId == position.positionId &&
+                                    (candidate.name.contains(query, ignoreCase = true) ||
+                                            candidate.manifesto.contains(query, ignoreCase = true) ||
+                                            query.isEmpty())
+                        }
+
+                        // Only add header if there are candidates for this position after filtering
+                        if (positionCandidates.isNotEmpty()) {
+                            items.add(ListItem.Header(position.name))
+
+                            // Add filtered candidates for this position
+                            positionCandidates.forEach { candidate ->
+                                items.add(ListItem.CandidateItem(candidate))
+                            }
+                        }
+                    }
+
+                    items
+                }.collect { items ->
+                    // Only update if home content is still visible and job is active
+                    if (binding.homeContent.visibility == View.VISIBLE && isActive) {
+                        adapter.submitList(items)
+                    }
+                }
+            } catch (e: Exception) {
+                // Only show error for non-cancellation exceptions and if activity is still active
+                if (e !is kotlinx.coroutines.CancellationException &&
+                    binding.homeContent.visibility == View.VISIBLE &&
+                    !isFinishing) {
+                    android.widget.Toast.makeText(this@MainActivity, "Error filtering candidates", android.widget.Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     private fun setupUI() {
@@ -61,32 +133,8 @@ class MainActivity : AppCompatActivity() {
         binding.rvCandidates.layoutManager = LinearLayoutManager(this)
         binding.rvCandidates.adapter = adapter
 
-        // Fetch candidates and positions, then group them
-        lifecycleScope.launch {
-            // Combine both flows to get positions and candidates
-            combine(
-                db.positionDao().getAllPositionsFlow(),
-                db.candidateDao().getAllCandidatesFlow()
-            ) { positions, candidates ->
-                // Create a list with headers and candidates grouped by position
-                val items = mutableListOf<ListItem>()
-
-                positions.forEach { position ->
-                    // Add header for this position
-                    items.add(ListItem.Header(position.name))
-
-                    // Add all candidates for this position
-                    val positionCandidates = candidates.filter { it.positionId == position.positionId }
-                    positionCandidates.forEach { candidate ->
-                        items.add(ListItem.CandidateItem(candidate))
-                    }
-                }
-
-                items
-            }.collect { items ->
-                adapter.submitList(items)
-            }
-        }
+        // Load initial data
+        filterCandidates("")
     }
 
     private fun setupBottomNavigation() {
@@ -123,6 +171,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showVoteFragment() {
+        // Cancel any ongoing search operations
+        searchJob?.cancel()
+
         // Hide home content and show fragment container
         binding.homeContent.visibility = View.GONE
         binding.fragmentContainerView.visibility = View.VISIBLE
@@ -136,6 +187,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showMyVotesFragment() {
+        // Cancel any ongoing search operations
+        searchJob?.cancel()
+
         // Hide home content and show fragment container
         binding.homeContent.visibility = View.GONE
         binding.fragmentContainerView.visibility = View.VISIBLE
@@ -149,6 +203,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showProfileFragment() {
+        // Cancel any ongoing search operations
+        searchJob?.cancel()
+
         // Hide home content and show fragment container
         binding.homeContent.visibility = View.GONE
         binding.fragmentContainerView.visibility = View.VISIBLE
@@ -175,5 +232,11 @@ class MainActivity : AppCompatActivity() {
         } else {
             super.onBackPressed()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Cancel all ongoing jobs when activity is destroyed
+        searchJob?.cancel()
     }
 }

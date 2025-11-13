@@ -1,11 +1,14 @@
 package com.example.myvotingapp
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,7 +17,9 @@ import com.bumptech.glide.Glide
 import com.example.myvotingapp.databinding.FragmentVoteBinding
 import com.example.myvotingapp.databinding.ItemCandidateVoteBinding
 import com.example.myvotingapp.databinding.ItemSectionHeaderVoteBinding
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class VoteFragment : Fragment() {
@@ -25,6 +30,9 @@ class VoteFragment : Fragment() {
     private var loggedInVoterId: String = ""
     private val selectedCandidates = mutableMapOf<Long, Long>() // positionId to candidateId
     private var totalPositionsCount = 0
+    private lateinit var adapter: VoteCandidateAdapter
+    private var searchJob: Job? = null
+    private var checkVoteJob: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,13 +56,80 @@ class VoteFragment : Fragment() {
 
         setupRecyclerView()
         setupSubmitButton()
+        setupSearchFunctionality()
 
         // Check if user has already voted
         checkIfUserHasVoted()
     }
 
+    private fun setupSearchFunctionality() {
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                // Cancel previous search job
+                searchJob?.cancel()
+
+                val query = s.toString().trim()
+                if (binding.rvCandidates.visibility == View.VISIBLE) {
+                    filterCandidates(query)
+                }
+            }
+        })
+    }
+
+    private fun filterCandidates(query: String) {
+        searchJob?.cancel()
+        searchJob = lifecycleScope.launch {
+            try {
+                combine(
+                    db.positionDao().getAllPositionsFlow(),
+                    db.candidateDao().getAllCandidatesFlow()
+                ) { positions, candidates ->
+                    totalPositionsCount = positions.size
+                    val filteredItems = mutableListOf<VoteListItem>()
+
+                    positions.forEach { position ->
+                        val positionCandidates = candidates.filter { candidate ->
+                            candidate.positionId == position.positionId &&
+                                    (candidate.name.contains(query, ignoreCase = true) ||
+                                            candidate.manifesto.contains(query, ignoreCase = true) ||
+                                            query.isEmpty())
+                        }
+
+                        // Only add header if there are candidates for this position after filtering
+                        if (positionCandidates.isNotEmpty()) {
+                            filteredItems.add(VoteListItem.Header(position))
+
+                            // Add filtered candidates for this position
+                            positionCandidates.forEach { candidate ->
+                                filteredItems.add(VoteListItem.CandidateItem(candidate))
+                            }
+                        }
+                    }
+
+                    filteredItems
+                }.collect { filteredItems ->
+                    // Only update if RecyclerView is still visible and job is active
+                    if (binding.rvCandidates.visibility == View.VISIBLE && isActive) {
+                        adapter.submitList(filteredItems)
+                    }
+                }
+            } catch (e: Exception) {
+                // Only show error for non-cancellation exceptions and if fragment is still active
+                if (e !is kotlinx.coroutines.CancellationException &&
+                    binding.rvCandidates.visibility == View.VISIBLE &&
+                    isAdded) {
+                    Toast.makeText(requireContext(), "Error filtering candidates", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
     private fun checkIfUserHasVoted() {
-        lifecycleScope.launch {
+        checkVoteJob = lifecycleScope.launch {
             try {
                 val votes = db.voteDao().getVotesForVoterFlow(loggedInVoterId)
                 votes.collect { voteList ->
@@ -67,12 +142,17 @@ class VoteFragment : Fragment() {
                     }
                 }
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Error checking vote status", Toast.LENGTH_SHORT).show()
+                if (isAdded) {
+                    Toast.makeText(requireContext(), "Error checking vote status", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
 
     private fun showAlreadyVotedUI() {
+        // Cancel any ongoing search operations
+        searchJob?.cancel()
+
         // Hide all voting elements
         binding.rvCandidates.visibility = View.GONE
         binding.btnSubmit.visibility = View.GONE
@@ -94,70 +174,71 @@ class VoteFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        val adapter = VoteCandidateAdapter()
+        adapter = VoteCandidateAdapter()
         binding.rvCandidates.layoutManager = LinearLayoutManager(requireContext())
         binding.rvCandidates.adapter = adapter
 
-        lifecycleScope.launch {
-            try {
-                // Combine both flows to get positions and candidates
-                combine(
-                    db.positionDao().getAllPositionsFlow(),
-                    db.candidateDao().getAllCandidatesFlow()
-                ) { positions, candidates ->
-                    // Update total positions count
-                    totalPositionsCount = positions.size
-
-                    // Create a list with headers and candidates grouped by position
-                    val items = mutableListOf<VoteListItem>()
-
-                    positions.forEach { position ->
-                        // Add header for this position
-                        items.add(VoteListItem.Header(position))
-
-                        // Add all candidates for this position
-                        val positionCandidates = candidates.filter { it.positionId == position.positionId }
-                        positionCandidates.forEach { candidate ->
-                            items.add(VoteListItem.CandidateItem(candidate))
-                        }
-                    }
-
-                    items
-                }.collect { items ->
-                    adapter.submitList(items)
-                }
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Error loading candidates", Toast.LENGTH_SHORT).show()
-            }
-        }
+        // Load initial data
+        filterCandidates("")
     }
 
     private fun setupSubmitButton() {
         binding.btnSubmit.setOnClickListener {
             if (selectedCandidates.isEmpty()) {
-                Toast.makeText(requireContext(), "Please select at least one candidate", Toast.LENGTH_SHORT).show()
+                showCustomToast("Please select at least one candidate")
                 return@setOnClickListener
             }
 
             // Check if user has selected one candidate for each position
             if (selectedCandidates.size < totalPositionsCount) {
-                Toast.makeText(requireContext(), "Please select one candidate for each position", Toast.LENGTH_LONG).show()
+                showCustomToast("Please select one candidate for each position")
                 return@setOnClickListener
             }
 
-            // Confirm submission
-            AlertDialog.Builder(requireContext())
-                .setTitle("Confirm Vote")
-                .setMessage("Are you sure you want to submit your vote?")
-                .setPositiveButton("Yes") { dialog, _ ->
-                    submitVotes()
-                    dialog.dismiss()
-                }
-                .setNegativeButton("No") { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
+            // Confirm submission with custom dialog
+            showCustomConfirmDialog()
         }
+    }
+
+    private fun showCustomConfirmDialog() {
+        val dialog = AlertDialog.Builder(requireContext())
+            .setTitle("Confirm Vote")
+            .setMessage("Are you sure you want to submit your vote?")
+            .setPositiveButton("Yes") { dialog, _ ->
+                submitVotes()
+                dialog.dismiss()
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+
+        // Apply custom styling after dialog is created
+        dialog.setOnShowListener {
+            // Set white background
+            dialog.window?.setBackgroundDrawableResource(android.R.color.white)
+
+            // Set title style
+            val titleTextView = dialog.findViewById<android.widget.TextView>(androidx.appcompat.R.id.alertTitle)
+            titleTextView?.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+            titleTextView?.setTypeface(titleTextView.typeface, android.graphics.Typeface.BOLD)
+
+            // Set message style
+            val messageTextView = dialog.findViewById<android.widget.TextView>(android.R.id.message)
+            messageTextView?.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+            messageTextView?.setTypeface(messageTextView.typeface, android.graphics.Typeface.BOLD)
+
+            // Set button styles
+            val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            positiveButton?.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_dark))
+            positiveButton?.setTypeface(positiveButton.typeface, android.graphics.Typeface.BOLD)
+
+            val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            negativeButton?.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark))
+            negativeButton?.setTypeface(negativeButton.typeface, android.graphics.Typeface.BOLD)
+        }
+
+        dialog.show()
     }
 
     private fun submitVotes() {
@@ -179,13 +260,15 @@ class VoteFragment : Fragment() {
                 // Show success message and update UI
                 showVoteSuccessMessage()
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Error submitting vote: ${e.message}", Toast.LENGTH_LONG).show()
+                if (isAdded) {
+                    showCustomToast("Error submitting vote: ${e.message}")
+                }
             }
         }
     }
 
     private fun showVoteSuccessMessage() {
-        AlertDialog.Builder(requireContext())
+        val dialog = AlertDialog.Builder(requireContext())
             .setTitle("Vote Submitted")
             .setMessage("Your Vote has been cast.")
             .setPositiveButton("OK") { dialog, _ ->
@@ -194,11 +277,43 @@ class VoteFragment : Fragment() {
                 showAlreadyVotedUI()
             }
             .setCancelable(false)
-            .show()
+            .create()
+
+        // Apply custom styling after dialog is created
+        dialog.setOnShowListener {
+            // Set white background
+            dialog.window?.setBackgroundDrawableResource(android.R.color.white)
+
+            // Set title style
+            val titleTextView = dialog.findViewById<android.widget.TextView>(androidx.appcompat.R.id.alertTitle)
+            titleTextView?.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+            titleTextView?.setTypeface(titleTextView.typeface, android.graphics.Typeface.BOLD)
+
+            // Set message style
+            val messageTextView = dialog.findViewById<android.widget.TextView>(android.R.id.message)
+            messageTextView?.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.black))
+            messageTextView?.setTypeface(messageTextView.typeface, android.graphics.Typeface.BOLD)
+
+            // Set button style
+            val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            positiveButton?.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_dark))
+            positiveButton?.setTypeface(positiveButton.typeface, android.graphics.Typeface.BOLD)
+        }
+
+        dialog.show()
+    }
+
+    private fun showCustomToast(message: String) {
+        if (isAdded) {
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        // Cancel all ongoing jobs when fragment is destroyed
+        searchJob?.cancel()
+        checkVoteJob?.cancel()
         _binding = null
     }
 
@@ -287,6 +402,18 @@ class VoteFragment : Fragment() {
                         selectedCandidates.remove(candidate.positionId)
                     }
                 }
+
+                // Make checkbox outline more visible
+                binding.cbVote.buttonTintList = android.content.res.ColorStateList(
+                    arrayOf(
+                        intArrayOf(-android.R.attr.state_checked),
+                        intArrayOf(android.R.attr.state_checked)
+                    ),
+                    intArrayOf(
+                        ContextCompat.getColor(requireContext(), android.R.color.darker_gray),
+                        ContextCompat.getColor(requireContext(), android.R.color.holo_green_dark)
+                    )
+                )
             }
 
             private fun loadImageWithGlide(candidate: Candidate) {

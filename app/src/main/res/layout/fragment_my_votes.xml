@@ -5,58 +5,83 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:padding="16dp">
+    android:background="#FFFFFF">
 
-    <!-- Top bar -->
+    <!-- Header Section with Gradient Background -->
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical">
+        android:orientation="vertical"
+        android:background="@drawable/section_header_gradient"
+        android:padding="20dp"
+        android:elevation="4dp">
 
+        <!-- Top Row: App Title and Notification -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:text="MyVotingApp"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"/>
+
+            <ImageView
+                android:id="@+id/ivNotification"
+                android:src="@drawable/ic_notification"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                app:tint="#FFFFFF" />
+
+        </LinearLayout>
+
+        <!-- My Votes Heading -->
         <TextView
-            android:text="MyVotingApp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="My Votes"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="#4B0082"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center" />
-
-        <ImageView
-            android:id="@+id/ivNotification"
-            android:src="@drawable/ic_notification"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            app:tint="#4B0082" />
-
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:layout_marginTop="19dp"/>
     </LinearLayout>
 
-    <!-- My Votes Heading -->
-    <TextView
+    <!-- Spacing between header and search bar -->
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="My Votes"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="#4B0082"
-        android:gravity="center"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="16dp"/>
+        android:layout_height="24dp" />
 
     <!-- Search Bar -->
-    <EditText
-        android:id="@+id/etSearch"
-        android:hint="Search"
-        android:textSize="14sp"
-        android:background="@drawable/bg_edittext2"
-        android:padding="16dp"
-        android:drawableLeft="@drawable/ic_search"
-        android:drawablePadding="8dp"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="16dp">
+
+        <EditText
+            android:id="@+id/etSearch"
+            android:hint="Search your votes..."
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:background="@drawable/bg_edittext2"
+            android:padding="16dp"
+            android:drawableLeft="@drawable/ic_search"
+            android:drawablePadding="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#000000"
+            android:textColorHint="#666666"/>
+
+    </LinearLayout>
 
     <!-- No Votes Message (Shown when user hasn't voted) -->
     <TextView
@@ -76,9 +101,9 @@
     <!-- Votes List -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvMyVotes"
-        android:layout_marginTop="24dp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:paddingHorizontal="16dp"/>
 
 </LinearLayout>

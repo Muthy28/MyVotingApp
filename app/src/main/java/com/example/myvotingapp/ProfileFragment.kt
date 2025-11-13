@@ -2,11 +2,13 @@ package com.example.myvotingapp
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.myvotingapp.databinding.FragmentProfileBinding
@@ -26,7 +28,6 @@ class ProfileFragment : Fragment() {
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
         db = AppDatabase.getDatabase(requireContext())
 
-        // Get logged in voter ID from arguments or MainActivity
         loggedInVoterId = arguments?.getString("LOGGED_IN_VOTER_ID") ?: ""
 
         return binding.root
@@ -37,6 +38,7 @@ class ProfileFragment : Fragment() {
 
         loadVoterProfile()
         setupClickListeners()
+        setupDarkModeToggle()
     }
 
     private fun loadVoterProfile() {
@@ -44,34 +46,111 @@ class ProfileFragment : Fragment() {
             if (loggedInVoterId.isNotEmpty()) {
                 val voter = db.voterDao().getVoterById(loggedInVoterId)
                 voter?.let {
-                    binding.tvName.text = "${it.firstName} ${it.lastName}"
-                    binding.tvFirstName.text = it.firstName
-                    binding.tvLastName.text = it.lastName
-                    binding.tvMobile.text = it.mobile
-                    binding.tvPassword.text = "xxxxxxxx" // Always show as xxxxxxxx for security
+                    updateUI(voter)
                 }
             }
         }
     }
 
+    private fun updateUI(voter: Voter) {
+        binding.tvName.text = "${voter.firstName} ${voter.lastName}"
+        binding.tvIdNumber.text = voter.idNumber
+        binding.tvFirstName.text = voter.firstName
+        binding.tvLastName.text = voter.lastName
+        binding.tvMobile.text = voter.mobile
+
+        // Set edit text values
+        binding.etIdNumber.setText(voter.idNumber)
+        binding.etFirstName.setText(voter.firstName)
+        binding.etLastName.setText(voter.lastName)
+        binding.etMobile.setText(voter.mobile)
+    }
+
     private fun setupClickListeners() {
-        binding.btnEditProfile.setOnClickListener {
-            // TODO: Implement edit profile functionality
-            Toast.makeText(requireContext(), "Edit Profile feature coming soon", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.btnChangePassword.setOnClickListener {
-            // TODO: Implement change password functionality
-            Toast.makeText(requireContext(), "Change Password feature coming soon", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.btnDeleteAccount.setOnClickListener {
-            showDeleteAccountConfirmation()
+        binding.btnSaveChanges.setOnClickListener {
+            saveProfileChanges()
         }
 
         binding.btnLogout.setOnClickListener {
             showLogoutConfirmation()
         }
+
+        binding.btnDeleteAccount.setOnClickListener {
+            showDeleteAccountConfirmation()
+        }
+    }
+
+    private fun saveProfileChanges() {
+        val firstName = binding.etFirstName.text.toString().trim()
+        val lastName = binding.etLastName.text.toString().trim()
+        val mobile = binding.etMobile.text.toString().trim()
+
+        if (firstName.isEmpty() || lastName.isEmpty() || mobile.isEmpty()) {
+            Toast.makeText(requireContext(), "Please fill all fields", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (mobile.length != 10) {
+            Toast.makeText(requireContext(), "Please enter a valid 10-digit mobile number", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        lifecycleScope.launch {
+            try {
+                val voter = db.voterDao().getVoterById(loggedInVoterId)
+                voter?.let { existingVoter ->
+                    val updatedVoter = existingVoter.copy(
+                        firstName = firstName,
+                        lastName = lastName,
+                        mobile = mobile
+                    )
+
+                    db.voterDao().updateVoter(updatedVoter)
+
+                    requireActivity().runOnUiThread {
+                        // Update the personal information display
+                        updateUI(updatedVoter)
+                        Toast.makeText(requireContext(), "Profile updated successfully", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            } catch (e: Exception) {
+                requireActivity().runOnUiThread {
+                    Toast.makeText(requireContext(), "Error updating profile: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun setupDarkModeToggle() {
+        // Set initial icon based on current theme
+        updateDarkModeIcon()
+
+        binding.btnDarkMode.setOnClickListener {
+            toggleDarkMode()
+        }
+    }
+
+    private fun toggleDarkMode() {
+        val currentNightMode = requireContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        when (currentNightMode) {
+            Configuration.UI_MODE_NIGHT_NO -> {
+                // Switch to dark mode
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            }
+            Configuration.UI_MODE_NIGHT_YES -> {
+                // Switch to light mode
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+            else -> {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+            }
+        }
+    }
+
+    private fun updateDarkModeIcon() {
+        val currentNightMode = requireContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        // You can create different icons for light/dark mode if needed
+        // For now using same icon
     }
 
     private fun showLogoutConfirmation() {
@@ -88,7 +167,6 @@ class ProfileFragment : Fragment() {
     }
 
     private fun performLogout() {
-        // Clear the Remember Me SharedPreferences
         val sharedPreferences = requireContext().getSharedPreferences("MyVotingAppPrefs", android.content.Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putBoolean("remember_me", false)
@@ -96,7 +174,6 @@ class ProfileFragment : Fragment() {
         editor.remove("is_admin")
         editor.apply()
 
-        // Navigate to FirstScreenActivity (Welcome Back screen)
         val intent = Intent(requireActivity(), FirstScreenActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
@@ -124,10 +201,8 @@ class ProfileFragment : Fragment() {
             try {
                 val voter = db.voterDao().getVoterById(loggedInVoterId)
                 voter?.let {
-                    // Delete the voter from database
                     db.voterDao().deleteVoter(it)
 
-                    // Clear the Remember Me SharedPreferences
                     val sharedPreferences = requireContext().getSharedPreferences("MyVotingAppPrefs", android.content.Context.MODE_PRIVATE)
                     val editor = sharedPreferences.edit()
                     editor.putBoolean("remember_me", false)
@@ -135,11 +210,9 @@ class ProfileFragment : Fragment() {
                     editor.remove("is_admin")
                     editor.apply()
 
-                    // Show success message
                     requireActivity().runOnUiThread {
                         Toast.makeText(requireContext(), "Account deleted successfully", Toast.LENGTH_LONG).show()
 
-                        // Navigate to FirstScreenActivity after account deletion
                         val intent = Intent(requireActivity(), FirstScreenActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                         startActivity(intent)

@@ -10,63 +10,115 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- Top Bar with Dark Mode and Logout -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24px">
+
+            <!-- Dark Mode Toggle (Top Left) -->
+            <ImageButton
+                android:id="@+id/btnDarkMode"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignParentStart="true"
+                android:background="@drawable/ic_dark_mode"
+                android:contentDescription="Dark mode toggle" />
+
+            <!-- Logout Button (Top Right) -->
+            <Button
+                android:id="@+id/btnLogout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/btn_logout"
+                android:padding="12dp"
+                android:text="Logout"
+                android:textColor="#FF0000" />
+
+        </RelativeLayout>
+
         <!-- Profile Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:gravity="center"
+            android:orientation="vertical"
             android:padding="24dp">
 
             <ImageView
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:src="@drawable/ic_profile"
+                android:layout_marginBottom="16dp"
                 android:background="#F0F0F0"
                 android:padding="16dp"
                 android:scaleType="centerInside"
-                android:layout_marginBottom="16dp"/>
+                android:src="@drawable/ic_profile" />
 
             <TextView
                 android:id="@+id/tvName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Voter Name"
+                android:textColor="#4B0082"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#4B0082"/>
+                android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Profile Information -->
+        <!-- Personal Information -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:background="@drawable/bg_candidate_item"
+            android:orientation="vertical"
             android:padding="16dp">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:text="Personal Information"
-                android:textSize="16sp"
-                android:textStyle="bold"
                 android:textColor="#4B0082"
-                android:layout_marginBottom="16dp"/>
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <!-- ID Number (Read-only) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="ID Number:"
+                    android:textColor="#666666" />
+
+                <TextView
+                    android:id="@+id/tvIdNumber"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="12345678"
+                    android:textColor="#4B0082"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <!-- First Name -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="12dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="First Name:"
-                    android:textColor="#666666"/>
+                    android:textColor="#666666" />
 
                 <TextView
                     android:id="@+id/tvFirstName"
@@ -74,23 +126,23 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="John"
-                    android:textStyle="bold"
-                    android:textColor="#4B0082"/>
+                    android:textColor="#4B0082"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <!-- Last Name -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="12dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Last Name:"
-                    android:textColor="#666666"/>
+                    android:textColor="#666666" />
 
                 <TextView
                     android:id="@+id/tvLastName"
@@ -98,23 +150,23 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Doe"
-                    android:textStyle="bold"
-                    android:textColor="#4B0082"/>
+                    android:textColor="#4B0082"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <!-- Mobile Number -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Mobile:"
-                    android:textColor="#666666"/>
+                    android:textColor="#666666" />
 
                 <TextView
                     android:id="@+id/tvMobile"
@@ -122,82 +174,161 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="0000000000"
-                    android:textStyle="bold"
-                    android:textColor="#4B0082"/>
-            </LinearLayout>
-
-            <!-- Password (Hidden) -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Password:"
-                    android:textColor="#666666"/>
-
-                <TextView
-                    android:id="@+id/tvPassword"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="xxxxxxxx"
-                    android:textStyle="bold"
-                    android:textColor="#4B0082"/>
+                    android:textColor="#4B0082"
+                    android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Action Buttons -->
+        <!-- Edit Profile Section -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/bg_candidate_item"
             android:orientation="vertical"
-            android:layout_marginTop="24dp">
+            android:padding="16dp"
+            android:layout_marginTop="16dp">
 
-            <Button
-                android:id="@+id/btnEditProfile"
+            <!-- Underlined Heading -->
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:text="Edit Profile"
-                android:background="@drawable/btn_primary"
-                android:textColor="#FFFFFF"
-                android:layout_marginBottom="12dp"
-                android:padding="16dp"/>
-
-            <Button
-                android:id="@+id/btnChangePassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Change Password"
-                android:background="@drawable/btn_secondary"
                 android:textColor="#4B0082"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <!-- Underline -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#4B0082"
+                android:layout_marginBottom="16dp" />
+
+            <!-- ID Number (Disabled) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                android:padding="16dp"/>
+                android:orientation="horizontal">
 
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="ID Number:"
+                    android:textColor="#666666" />
 
-            <Button
-                android:id="@+id/btnLogout"
+                <EditText
+                    android:id="@+id/etIdNumber"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/edit_text_background"
+                    android:enabled="false"
+                    android:padding="12dp"
+                    android:text="12345678"
+                    android:textColor="#666666" />
+            </LinearLayout>
+
+            <!-- First Name -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Logout"
-                android:background="@drawable/btn_logout"
-                android:textColor="#FF0000"
-                android:padding="16dp"/>
+                android:layout_marginBottom="12dp"
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/btnDeleteAccount"
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="First Name:"
+                    android:textColor="#666666" />
+
+                <EditText
+                    android:id="@+id/etFirstName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/edit_text_background"
+                    android:padding="12dp"
+                    android:text="John"
+                    android:textColor="#4B0082" />
+            </LinearLayout>
+
+            <!-- Last Name -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Delete Account"
-                android:background="@drawable/btn_delete"
-                android:textColor="#FFFFFF"
-                android:layout_marginTop="12dp"
-                android:padding="16dp"/>
+                android:layout_marginBottom="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Last Name:"
+                    android:textColor="#666666" />
+
+                <EditText
+                    android:id="@+id/etLastName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/edit_text_background"
+                    android:padding="12dp"
+                    android:text="Doe"
+                    android:textColor="#4B0082" />
+            </LinearLayout>
+
+            <!-- Mobile Number -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Mobile:"
+                    android:textColor="#666666" />
+
+                <EditText
+                    android:id="@+id/etMobile"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/edit_text_background"
+                    android:inputType="phone"
+                    android:padding="12dp"
+                    android:text="0000000000"
+                    android:textColor="#4B0082" />
+            </LinearLayout>
+
+            <!-- Save Changes Button -->
+            <Button
+                android:id="@+id/btnSaveChanges"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/btn_primary"
+                android:padding="16dp"
+                android:text="Save Changes"
+                android:textColor="#FFFFFF" />
         </LinearLayout>
+
+        <!-- Delete Account Button (Bottom Right) -->
+        <Button
+            android:id="@+id/btnDeleteAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/btn_delete"
+            android:padding="16dp"
+            android:text="Delete Account"
+            android:textColor="#FFFFFF" />
 
     </LinearLayout>
 </ScrollView>

@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:text="Section Header"
-    android:textSize="18sp"
+    android:textSize="20sp"
     android:textStyle="bold"
-    android:textColor="#4B0082"
+    android:textColor="#FFFFFF"
     android:padding="16dp"
-    android:background="#F0F0F0"
+    android:background="@drawable/section_header_gradient"
     android:layout_marginTop="8dp"/>

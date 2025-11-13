@@ -30,10 +30,12 @@
         android:layout_weight="1"
         android:gravity="center_vertical"/>
 
-    <!-- Checkbox -->
+    <!-- Checkbox with enhanced visibility -->
     <CheckBox
         android:id="@+id/cbVote"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"/>
+        android:layout_gravity="center_vertical"
+        android:buttonTint="#666666"
+        android:padding="8dp"/>
 </LinearLayout>
