@@ -24,6 +24,7 @@ class VoteFragment : Fragment() {
     private lateinit var db: AppDatabase
     private var loggedInVoterId: String = ""
     private val selectedCandidates = mutableMapOf<Long, Long>() // positionId to candidateId
+    private var totalPositionsCount = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,7 +38,11 @@ class VoteFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Get logged in voter ID from arguments
-        loggedInVoterId = arguments?.getString("LOGGED_IN_VOTER_ID") ?: ""
+        loggedInVoterId = arguments?.getString("LOGGED_IN_VOTER_ID") ?: run {
+            Toast.makeText(requireContext(), "Error: Voter ID not found", Toast.LENGTH_SHORT).show()
+            requireActivity().onBackPressed()
+            return
+        }
 
         db = AppDatabase.getDatabase(requireContext())
 
@@ -50,15 +55,19 @@ class VoteFragment : Fragment() {
 
     private fun checkIfUserHasVoted() {
         lifecycleScope.launch {
-            val votes = db.voteDao().getVotesForVoterFlow(loggedInVoterId)
-            votes.collect { voteList ->
-                if (voteList.isNotEmpty()) {
-                    // User has already voted - show message on screen
-                    showAlreadyVotedUI()
-                } else {
-                    // User hasn't voted yet - show normal voting UI
-                    showNormalVotingUI()
+            try {
+                val votes = db.voteDao().getVotesForVoterFlow(loggedInVoterId)
+                votes.collect { voteList ->
+                    if (voteList.isNotEmpty()) {
+                        // User has already voted - show message on screen
+                        showAlreadyVotedUI()
+                    } else {
+                        // User hasn't voted yet - show normal voting UI
+                        showNormalVotingUI()
+                    }
                 }
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Error checking vote status", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -90,28 +99,35 @@ class VoteFragment : Fragment() {
         binding.rvCandidates.adapter = adapter
 
         lifecycleScope.launch {
-            // Combine both flows to get positions and candidates
-            combine(
-                db.positionDao().getAllPositionsFlow(),
-                db.candidateDao().getAllCandidatesFlow()
-            ) { positions, candidates ->
-                // Create a list with headers and candidates grouped by position
-                val items = mutableListOf<VoteListItem>()
+            try {
+                // Combine both flows to get positions and candidates
+                combine(
+                    db.positionDao().getAllPositionsFlow(),
+                    db.candidateDao().getAllCandidatesFlow()
+                ) { positions, candidates ->
+                    // Update total positions count
+                    totalPositionsCount = positions.size
 
-                positions.forEach { position ->
-                    // Add header for this position
-                    items.add(VoteListItem.Header(position))
+                    // Create a list with headers and candidates grouped by position
+                    val items = mutableListOf<VoteListItem>()
 
-                    // Add all candidates for this position
-                    val positionCandidates = candidates.filter { it.positionId == position.positionId }
-                    positionCandidates.forEach { candidate ->
-                        items.add(VoteListItem.CandidateItem(candidate))
+                    positions.forEach { position ->
+                        // Add header for this position
+                        items.add(VoteListItem.Header(position))
+
+                        // Add all candidates for this position
+                        val positionCandidates = candidates.filter { it.positionId == position.positionId }
+                        positionCandidates.forEach { candidate ->
+                            items.add(VoteListItem.CandidateItem(candidate))
+                        }
                     }
-                }
 
-                items
-            }.collect { items ->
-                adapter.submitList(items)
+                    items
+                }.collect { items ->
+                    adapter.submitList(items)
+                }
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Error loading candidates", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -124,8 +140,7 @@ class VoteFragment : Fragment() {
             }
 
             // Check if user has selected one candidate for each position
-            val allPositions = getPositionsCount()
-            if (selectedCandidates.size < allPositions) {
+            if (selectedCandidates.size < totalPositionsCount) {
                 Toast.makeText(requireContext(), "Please select one candidate for each position", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
@@ -143,11 +158,6 @@ class VoteFragment : Fragment() {
                 }
                 .show()
         }
-    }
-
-    private fun getPositionsCount(): Int {
-        // This would ideally come from the database, but for now we'll use the selectedCandidates logic
-        return selectedCandidates.keys.size
     }
 
     private fun submitVotes() {
@@ -169,7 +179,7 @@ class VoteFragment : Fragment() {
                 // Show success message and update UI
                 showVoteSuccessMessage()
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Error submitting vote: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Error submitting vote: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }

@@ -1,0 +1,34 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Ballot Box Body -->
+    <path
+        android:fillColor="#4B0082"
+        android:strokeColor="#000000"
+        android:strokeWidth="2"
+        android:pathData="M50,50 L150,50 L150,150 L50,150 Z" />
+
+    <!-- Ballot Slot -->
+    <path
+        android:fillColor="#6A0DAD"
+        android:strokeColor="#000000"
+        android:strokeWidth="1"
+        android:pathData="M70,30 L130,30 L130,50 L70,50 Z" />
+
+    <!-- Checkmark inside -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:pathData="M80,90 L100,120 L140,70" />
+
+    <!-- Voting Hand -->
+    <path
+        android:fillColor="#FFD700"
+        android:strokeColor="#000000"
+        android:strokeWidth="1"
+        android:pathData="M120,120 C125,115 135,115 140,120 C145,125 145,135 140,140 C135,145 125,145 120,140 Z" />
+</vector>

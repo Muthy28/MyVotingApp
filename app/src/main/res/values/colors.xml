@@ -16,4 +16,7 @@
     <color name="colorOnPrimary">#FFFFFF</color>
     <color name="colorOnBackground">#000000</color>
     <color name="colorOnSurface">#000000</color>
+
+    <!-- ADD THIS LINE -->
+    <color name="launcher_background">#4B0082</color>
 </resources>

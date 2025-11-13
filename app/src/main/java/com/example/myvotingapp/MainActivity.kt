@@ -171,7 +171,6 @@ class MainActivity : AppCompatActivity() {
             // If we're back to no fragments, show home content
             if (supportFragmentManager.backStackEntryCount == 0) {
                 showHomeContent()
-                binding.bottomNav.selectedItemId = R.id.nav_home
             }
         } else {
             super.onBackPressed()

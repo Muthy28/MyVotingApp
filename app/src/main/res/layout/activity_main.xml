@@ -7,87 +7,122 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <!-- Home Content (Visible by default) -->
-    <LinearLayout
-        android:id="@+id/homeContent"
-        android:orientation="vertical"
+    <!-- Content Area (Home or Fragments) -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="16dp">
+        android:layout_weight="1">
 
-        <!-- Top bar -->
+        <!-- Home Content (Visible by default) -->
         <LinearLayout
-            android:orientation="horizontal"
+            android:id="@+id/homeContent"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical">
+            android:layout_height="match_parent">
 
-            <TextView
-                android:text="MyVotingApp"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#4B0082"
-                android:layout_width="0dp"
+            <!-- Header Section with Gradient Background -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"/>
+                android:orientation="vertical"
+                android:background="@drawable/section_header_gradient"
+                android:padding="20dp"
+                android:elevation="4dp">
 
-            <ImageView
-                android:id="@+id/ivNotification"
-                android:src="@drawable/ic_notification"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                app:tint="#4B0082" />
+                <!-- Top Row: App Title and Notification -->
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:text="MyVotingApp"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"/>
+
+                    <ImageView
+                        android:id="@+id/ivNotification"
+                        android:src="@drawable/ic_notification"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        app:tint="#FFFFFF" />
+
+                </LinearLayout>
+
+                <!-- Welcome Message Centered -->
+                <TextView
+                    android:id="@+id/tvWelcome"
+                    android:text="Welcome, Voter"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#FFFFFF"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_marginTop="12dp"/>
+
+            </LinearLayout>
+
+            <!-- Spacing between header and search bar -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="24dp" />
+
+            <!-- Search Bar -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <EditText
+                    android:id="@+id/etSearch"
+                    android:hint="Search candidates..."
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_edittext2"
+                    android:padding="16dp"
+                    android:drawableLeft="@drawable/ic_search"
+                    android:drawablePadding="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000000"
+                    android:textColorHint="#666666"/>
+
+            </LinearLayout>
+
+            <!-- Candidate List -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvCandidates"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingHorizontal="16dp"/>
 
         </LinearLayout>
 
-        <!-- Welcome Text -->
-        <TextView
-            android:id="@+id/tvWelcome"
-            android:text="Welcome, Voter"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#4B0082"
-            android:layout_marginTop="24dp"
+        <!-- Fragment Container for other screens (Hidden by default) -->
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragmentContainerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
 
-        <!-- Search Bar -->
-        <EditText
-            android:id="@+id/etSearch"
-            android:hint="Search"
-            android:textSize="14sp"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/bg_edittext2"
-            android:padding="16dp"
-            android:drawableLeft="@drawable/ic_search"
-            android:drawablePadding="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+    </FrameLayout>
 
-        <!-- Candidate List -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvCandidates"
-            android:layout_marginTop="24dp"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
-    </LinearLayout>
-
-    <!-- Fragment Container for Profile (Hidden by default) -->
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentContainerView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:visibility="gone"/>
-
-    <!-- Bottom Navigation -->
+    <!-- Bottom Navigation (Always Visible) -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
+        app:itemIconTint="@color/bottom_nav_color"
+        app:itemTextColor="@color/bottom_nav_color"
         app:menu="@menu/bottom_nav_menu"/>
+
 </LinearLayout>

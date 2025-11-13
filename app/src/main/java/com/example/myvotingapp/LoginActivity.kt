@@ -1,6 +1,7 @@
 package com.example.myvotingapp
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -13,9 +14,14 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var dao: VoterDao
+    private lateinit var sharedPreferences: SharedPreferences
 
     companion object {
         private const val TAG = "LoginActivity"
+        private const val PREFS_NAME = "MyVotingAppPrefs"
+        private const val KEY_REMEMBER_ME = "remember_me"
+        private const val KEY_LOGGED_IN_USER_ID = "logged_in_user_id"
+        private const val KEY_IS_ADMIN = "is_admin"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,6 +30,9 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         Log.d(TAG, "LoginActivity created")
+
+        // Initialize SharedPreferences
+        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
 
         try {
             dao = AppDatabase.getDatabase(this).voterDao()
@@ -42,13 +51,14 @@ class LoginActivity : AppCompatActivity() {
 
             val idNumber = binding.etIdNumber.text.toString().trim()
             val password = binding.etPassword.text.toString().trim()
+            val rememberMe = binding.cbRememberMe.isChecked
 
             if (idNumber.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please enter ID and Password", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            Log.d(TAG, "Attempting login for ID: $idNumber")
+            Log.d(TAG, "Attempting login for ID: $idNumber, Remember Me: $rememberMe")
 
             lifecycleScope.launch {
                 try {
@@ -61,11 +71,19 @@ class LoginActivity : AppCompatActivity() {
                         when {
                             idNumber == "12345678" && password == "admin" -> {
                                 Log.d(TAG, "Admin login successful")
+                                // Save admin login state if Remember Me is checked
+                                if (rememberMe) {
+                                    saveLoginState(idNumber, true)
+                                }
                                 startActivity(Intent(this@LoginActivity, AdminDashboardActivity::class.java))
                                 finish()
                             }
                             voter != null && voter.password.trim() == password -> {
                                 Log.d(TAG, "Voter login successful for: ${voter.firstName}")
+                                // Save voter login state if Remember Me is checked
+                                if (rememberMe) {
+                                    saveLoginState(idNumber, false)
+                                }
                                 try {
                                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
                                     intent.putExtra("LOGGED_IN_VOTER_ID", idNumber)
@@ -97,5 +115,14 @@ class LoginActivity : AppCompatActivity() {
             Log.d(TAG, "Navigate to RegisterActivity")
             startActivity(Intent(this, RegisterActivity::class.java))
         }
+    }
+
+    private fun saveLoginState(userId: String, isAdmin: Boolean) {
+        val editor = sharedPreferences.edit()
+        editor.putBoolean(KEY_REMEMBER_ME, true)
+        editor.putString(KEY_LOGGED_IN_USER_ID, userId)
+        editor.putBoolean(KEY_IS_ADMIN, isAdmin)
+        editor.apply()
+        Log.d(TAG, "Login state saved - User: $userId, Admin: $isAdmin")
     }
 }

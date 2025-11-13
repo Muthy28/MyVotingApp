@@ -13,6 +13,23 @@
         android:scaleType="centerCrop"
         android:src="@drawable/hero_abstract" />
 
+    <!-- App Title Top Right -->
+    <TextView
+        android:id="@+id/tvAppTitle"
+        android:text="MyVotingApp"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:shadowColor="#80000000"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="4"
+        android:layout_gravity="top|right"
+        android:layout_marginTop="50dp"
+        android:layout_marginRight="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <!-- Centered Form -->
     <ScrollView
         android:layout_width="match_parent"
@@ -51,8 +68,9 @@
                 <!-- First Name -->
                 <TextView
                     android:text="First Name"
-                    android:textColor="#455A64"
+                    android:textColor="#000000"
                     android:textSize="14sp"
+                    android:textStyle="bold"
                     android:layout_marginBottom="4dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
@@ -62,13 +80,17 @@
                     android:padding="12dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp" />
+                    android:layout_marginBottom="12dp"
+                    android:textColor="#000000"
+                    android:hint="Enter first name"
+                    android:textColorHint="#666666" />
 
                 <!-- Last Name -->
                 <TextView
                     android:text="Last Name"
-                    android:textColor="#455A64"
+                    android:textColor="#000000"
                     android:textSize="14sp"
+                    android:textStyle="bold"
                     android:layout_marginBottom="4dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
@@ -78,13 +100,17 @@
                     android:padding="12dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp" />
+                    android:layout_marginBottom="12dp"
+                    android:textColor="#000000"
+                    android:hint="Enter last name"
+                    android:textColorHint="#666666" />
 
                 <!-- Mobile Number -->
                 <TextView
                     android:text="Mobile Number"
-                    android:textColor="#455A64"
+                    android:textColor="#000000"
                     android:textSize="14sp"
+                    android:textStyle="bold"
                     android:layout_marginBottom="4dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
@@ -95,13 +121,17 @@
                     android:padding="12dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp" />
+                    android:layout_marginBottom="12dp"
+                    android:textColor="#000000"
+                    android:hint="Enter mobile number"
+                    android:textColorHint="#666666" />
 
                 <!-- ID Number -->
                 <TextView
                     android:text="ID Number"
-                    android:textColor="#455A64"
+                    android:textColor="#000000"
                     android:textSize="14sp"
+                    android:textStyle="bold"
                     android:layout_marginBottom="4dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
@@ -112,13 +142,17 @@
                     android:padding="12dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp" />
+                    android:layout_marginBottom="12dp"
+                    android:textColor="#000000"
+                    android:hint="Enter ID number"
+                    android:textColorHint="#666666" />
 
                 <!-- Password -->
                 <TextView
                     android:text="Password"
-                    android:textColor="#455A64"
+                    android:textColor="#000000"
                     android:textSize="14sp"
+                    android:textStyle="bold"
                     android:layout_marginBottom="4dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
@@ -129,26 +163,32 @@
                     android:padding="12dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp" />
+                    android:layout_marginBottom="20dp"
+                    android:textColor="#000000"
+                    android:hint="Enter password"
+                    android:textColorHint="#666666" />
 
-                <!-- Register Button -->
+                <!-- Register Button (Blue) -->
                 <Button
                     android:id="@+id/btnRegister"
                     android:text="Register"
-                    android:backgroundTint="#4CAF50"
+                    android:backgroundTint="#2196F3"
                     android:textColor="#FFFFFF"
+                    android:textStyle="bold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="12dp"
                     android:background="@drawable/bg_button" />
 
-                <!-- Login Link -->
+                <!-- Login Link (Centered and Bold) -->
                 <TextView
                     android:id="@+id/tvLogin"
                     android:text="Already have an account? Login"
                     android:textColor="#00695C"
+                    android:textStyle="bold"
                     android:layout_marginTop="16dp"
                     android:textAlignment="center"
+                    android:gravity="center"
                     android:clickable="true"
                     android:focusable="true"
                     android:textSize="14sp"

@@ -1,6 +1,7 @@
 package com.example.myvotingapp
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -69,9 +70,39 @@ class ProfileFragment : Fragment() {
         }
 
         binding.btnLogout.setOnClickListener {
-            // Navigate back to login screen
-            requireActivity().finish()
+            showLogoutConfirmation()
         }
+    }
+
+    private fun showLogoutConfirmation() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Logout")
+            .setMessage("Are you sure you want to logout?")
+            .setPositiveButton("Logout") { dialog, which ->
+                performLogout()
+            }
+            .setNegativeButton("Cancel") { dialog, which ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun performLogout() {
+        // Clear the Remember Me SharedPreferences
+        val sharedPreferences = requireContext().getSharedPreferences("MyVotingAppPrefs", android.content.Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putBoolean("remember_me", false)
+        editor.remove("logged_in_user_id")
+        editor.remove("is_admin")
+        editor.apply()
+
+        // Navigate to FirstScreenActivity (Welcome Back screen)
+        val intent = Intent(requireActivity(), FirstScreenActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+        requireActivity().finish()
+
+        Toast.makeText(requireContext(), "Logged out successfully", Toast.LENGTH_SHORT).show()
     }
 
     private fun showDeleteAccountConfirmation() {
@@ -96,11 +127,22 @@ class ProfileFragment : Fragment() {
                     // Delete the voter from database
                     db.voterDao().deleteVoter(it)
 
+                    // Clear the Remember Me SharedPreferences
+                    val sharedPreferences = requireContext().getSharedPreferences("MyVotingAppPrefs", android.content.Context.MODE_PRIVATE)
+                    val editor = sharedPreferences.edit()
+                    editor.putBoolean("remember_me", false)
+                    editor.remove("logged_in_user_id")
+                    editor.remove("is_admin")
+                    editor.apply()
+
                     // Show success message
                     requireActivity().runOnUiThread {
                         Toast.makeText(requireContext(), "Account deleted successfully", Toast.LENGTH_LONG).show()
 
-                        // Navigate back to login screen
+                        // Navigate to FirstScreenActivity after account deletion
+                        val intent = Intent(requireActivity(), FirstScreenActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
                         requireActivity().finish()
                     }
                 }
