@@ -95,6 +95,7 @@ class CandidatesFragment : Fragment() {
             if (formView != null) {
                 formContainer.addView(formView)
                 tvFormHint.visibility = View.GONE
+                setupImageSelection(formView)
             } else {
                 tvFormHint.visibility = View.VISIBLE
             }
