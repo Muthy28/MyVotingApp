@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="#F5F5F5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <!-- Header -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Manage Voters"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#4B0082"
+            android:gravity="center"
+            android:layout_marginBottom="32dp" />
+
+        <!-- Action Buttons - Each in its own row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="24dp">
+
+            <!-- Update Voter Button -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:layout_margin="6dp"
+                android:background="#FF9800"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="start"
+                    android:text="Update Voter"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/btnUpdateVoter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="37dp"
+                    android:backgroundTint="#F57C00"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="Update →"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
+
+            <!-- Delete Voter Button -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="58dp"
+                android:layout_margin="6dp"
+                android:background="#F44336"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="start"
+                    android:text="Delete Voter"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/btnDeleteVoter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="37dp"
+                    android:backgroundTint="#D32F2F"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="Delete →"
+                    android:textColor="#FFFFFF" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Form Container (initially hidden) -->
+        <LinearLayout
+            android:id="@+id/formContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:background="@drawable/bg_rounded_card"
+            android:padding="16dp"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:id="@+id/tvFormTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Voter Form"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#4B0082"
+                android:gravity="center"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Form content will be dynamically added here -->
+            <TextView
+                android:id="@+id/tvFormHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Select an action to manage voters"
+                android:textSize="16sp"
+                android:textColor="#666666"
+                android:gravity="center"
+                android:layout_marginTop="16dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
