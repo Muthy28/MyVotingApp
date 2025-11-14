@@ -21,7 +21,6 @@ class AdminDashboardActivity : AppCompatActivity() {
 
         setupBottomNavigation()
 
-        // Load home by default
         showHomeFragment()
     }
 
@@ -38,6 +37,10 @@ class AdminDashboardActivity : AppCompatActivity() {
                 }
                 R.id.nav_positions -> {
                     showPositionsFragment()
+                    true
+                }
+                R.id.nav_voters -> {
+                    showVotersFragment()
                     true
                 }
                 R.id.nav_profile -> {
@@ -77,6 +80,14 @@ class AdminDashboardActivity : AppCompatActivity() {
             setReorderingAllowed(true)
         }
         supportActionBar?.title = "Manage Positions"
+    }
+
+    private fun showVotersFragment() {
+        supportFragmentManager.commit {
+            replace(R.id.fragmentContainer, VotersFragment())
+            setReorderingAllowed(true)
+        }
+        supportActionBar?.title = "Manage Voters"
     }
 
     private fun showProfileFragment() {
