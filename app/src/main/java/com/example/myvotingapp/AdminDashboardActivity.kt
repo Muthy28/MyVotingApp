@@ -47,6 +47,12 @@ class AdminDashboardActivity : AppCompatActivity() {
                 else -> false
             }
         }
+
+        bottomNavigationView.menu?.let { menu ->
+            for (i in 0 until menu.size()) {
+                menu.getItem(i).isVisible = true
+            }
+        }
     }
 
     private fun showHomeFragment() {

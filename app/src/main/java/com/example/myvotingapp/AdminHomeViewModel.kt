@@ -29,26 +29,26 @@ class AdminHomeViewModel(application: Application) : AndroidViewModel(applicatio
     fun loadPositionsInfo() {
         viewModelScope.launch {
             try {
-                // Use .first() to get the current value from the Flow
                 val positions = positionDao.getAllPositionsFlow().first()
                 val candidates = candidateDao.getAllCandidatesFlow().first()
 
                 val result = StringBuilder()
-                result.append("Total Positions: ${positions.size}\n\n")
+                result.append("<b>Total Positions:${getTabSpacing("Total Positions:")}${positions.size}</b><br><br>")
 
                 if (positions.isNotEmpty()) {
-                    result.append("Candidates per Position:\n")
-                    positions.forEach { position ->
+                    result.append("<b>Candidates per Position:</b><br>")
+                    positions.forEachIndexed { index, position ->
                         val candidateCount = candidates.count { it.positionId == position.positionId }
-                        result.append("• ${position.name}: $candidateCount candidate(s)\n")
+                        val positionText = "${index + 1}. ${position.name}:" // Changed to numbers
+                        result.append("<b>${positionText}${getTabSpacing(positionText)}$candidateCount candidate(s)</b><br>")
                     }
                 } else {
-                    result.append("No positions registered yet.")
+                    result.append("<b>No positions registered yet.</b>")
                 }
 
                 _positionsInfo.value = result.toString()
             } catch (e: Exception) {
-                _positionsInfo.value = "Error loading positions data: ${e.message}"
+                _positionsInfo.value = "<b>Error loading positions data: ${e.message}</b>"
             }
         }
     }
@@ -56,26 +56,26 @@ class AdminHomeViewModel(application: Application) : AndroidViewModel(applicatio
     fun loadCandidatesInfo() {
         viewModelScope.launch {
             try {
-                // Use .first() to get the current value from the Flow
                 val candidates = candidateDao.getAllCandidatesFlow().first()
                 val positions = positionDao.getAllPositionsFlow().first()
 
                 val result = StringBuilder()
-                result.append("Total Candidates: ${candidates.size}\n\n")
+                result.append("<b>Total Candidates:${getTabSpacing("Total Candidates:")}${candidates.size}</b><br><br>")
 
                 if (candidates.isNotEmpty()) {
-                    result.append("Candidate Details:\n")
-                    candidates.forEach { candidate ->
+                    result.append("<b>Candidate Details:</b><br>")
+                    candidates.forEachIndexed { index, candidate ->
                         val positionName = positions.find { it.positionId == candidate.positionId }?.name ?: "Unknown Position"
-                        result.append("• ${candidate.name} - $positionName\n")
+                        val candidateText = "${index + 1}. ${candidate.name}" // Changed to numbers
+                        result.append("<b>${candidateText}${getTabSpacing(candidateText)}$positionName</b><br>")
                     }
                 } else {
-                    result.append("No candidates registered yet.")
+                    result.append("<b>No candidates registered yet.</b>")
                 }
 
                 _candidatesInfo.value = result.toString()
             } catch (e: Exception) {
-                _candidatesInfo.value = "Error loading candidates data: ${e.message}"
+                _candidatesInfo.value = "<b>Error loading candidates data: ${e.message}</b>"
             }
         }
     }
@@ -83,27 +83,28 @@ class AdminHomeViewModel(application: Application) : AndroidViewModel(applicatio
     fun loadVotersInfo() {
         viewModelScope.launch {
             try {
-                // Use .first() to get the current value from the Flow
                 val voters = voterDao.getAllVotersFlow().first()
 
                 val result = StringBuilder()
-                result.append("Total Voters: ${voters.size}\n\n")
+                result.append("<b>Total Voters:${getTabSpacing("Total Voters:")}${voters.size}</b><br><br>")
 
                 if (voters.isNotEmpty()) {
-                    result.append("Voter List:\n")
-                    voters.take(10).forEach { voter -> // Show first 10 voters
-                        result.append("• ${voter.firstName} ${voter.lastName} (${voter.mobile})\n")
+                    result.append("<b>Voter List:</b><br>")
+                    voters.take(10).forEachIndexed { index, voter -> // Changed to numbers
+                        val fullName = "${voter.firstName} ${voter.lastName}"
+                        val voterText = "${index + 1}. $fullName" // Changed to numbers
+                        result.append("<b>${voterText}${getTabSpacing(voterText)}(${voter.mobile})</b><br>")
                     }
                     if (voters.size > 10) {
-                        result.append("... and ${voters.size - 10} more voters")
+                        result.append("<b>... and ${voters.size - 10} more voters</b>")
                     }
                 } else {
-                    result.append("No voters registered yet.")
+                    result.append("<b>No voters registered yet.</b>")
                 }
 
                 _votersInfo.value = result.toString()
             } catch (e: Exception) {
-                _votersInfo.value = "Error loading voters data: ${e.message}"
+                _votersInfo.value = "<b>Error loading voters data: ${e.message}</b>"
             }
         }
     }
@@ -111,26 +112,76 @@ class AdminHomeViewModel(application: Application) : AndroidViewModel(applicatio
     fun loadVotesInfo() {
         viewModelScope.launch {
             try {
-                // Use .first() to get the current value from the Flow
                 val candidates = candidateDao.getAllCandidatesFlow().first()
+                val positions = positionDao.getAllPositionsFlow().first()
                 val totalVotes = candidates.sumOf { it.voteCount }
 
                 val result = StringBuilder()
-                result.append("Total Votes Cast: $totalVotes\n\n")
+                result.append("<b>Total Votes Cast:${getTabSpacing("Total Votes Cast:")}$totalVotes vote(s)</b><br><br>")
 
-                if (candidates.isNotEmpty()) {
-                    result.append("Votes per Candidate:\n")
-                    candidates.forEach { candidate ->
-                        result.append("• ${candidate.name}: ${candidate.voteCount} vote(s)\n")
+                if (candidates.isNotEmpty() && positions.isNotEmpty()) {
+                    // Group candidates by position and sort by votes
+                    val positionsWithCandidates = positions.map { position ->
+                        val positionCandidates = candidates
+                            .filter { it.positionId == position.positionId }
+                            .sortedByDescending { it.voteCount }
+                        position to positionCandidates
+                    }.filter { it.second.isNotEmpty() }
+
+                    positionsWithCandidates.forEach { (position, positionCandidates) ->
+                        val positionTotalVotes = positionCandidates.sumOf { it.voteCount }
+
+                        result.append("<b><font color='#1976D2'>${position.name.toUpperCase()}</font></b><br>")
+                        result.append("<b>Total Votes for ${position.name}:${getTabSpacing("Total Votes for ${position.name}:")}$positionTotalVotes vote(s)</b><br><br>")
+
+                        // Table header
+                        result.append("<b>Candidate${getTabSpacing("Candidate", 25)}Votes${getTabSpacing("Votes", 10)}Percentage</b><br>")
+
+                        positionCandidates.forEachIndexed { index, candidate ->
+                            val percentage = if (positionTotalVotes > 0) {
+                                String.format("%.1f", (candidate.voteCount.toDouble() / positionTotalVotes) * 100)
+                            } else "0.0"
+
+                            val candidateText = "${index + 1}. ${candidate.name}" // Already using numbers
+                            val votesText = "${candidate.voteCount}"
+                            val percentageText = "$percentage%"
+
+                            result.append("<b>${candidateText}${getTabSpacing(candidateText, 25)}${votesText}${getTabSpacing(votesText, 15)}$percentageText</b><br>")
+                        }
+
+                        // Add enhanced bar chart visualization
+                        result.append("<br><b>Vote Distribution Chart:</b><br>")
+                        positionCandidates.forEachIndexed { index, candidate ->
+                            val percentage = if (positionTotalVotes > 0) {
+                                (candidate.voteCount.toDouble() / positionTotalVotes) * 100
+                            } else 0.0
+
+                            val barLength = (percentage / 3).toInt() // Scale for bar length
+                            val bar = "█".repeat(maxOf(1, barLength)) // Ensure at least one block
+                            val candidateText = "${index + 1}. ${candidate.name}" // Already using numbers
+                            val percentageDisplay = String.format("%.1f%%", percentage)
+
+                            result.append("<b>$candidateText</b><br>")
+                            result.append("<b><font color='#4CAF50'>$bar</font> $percentageDisplay (${candidate.voteCount} vote(s))</b><br>")
+                        }
+
+                        result.append("<br>")
                     }
                 } else {
-                    result.append("No votes cast yet.")
+                    result.append("<b>No votes cast yet.</b>")
                 }
 
                 _votesInfo.value = result.toString()
             } catch (e: Exception) {
-                _votesInfo.value = "Error loading votes data: ${e.message}"
+                _votesInfo.value = "<b>Error loading votes data: ${e.message}</b>"
             }
         }
+    }
+
+    // Helper function to create consistent tab spacing
+    private fun getTabSpacing(text: String, targetLength: Int = 25): String {
+        val currentLength = text.length
+        val spacesNeeded = maxOf(0, targetLength - currentLength)
+        return "&nbsp;".repeat(spacesNeeded)
     }
 }

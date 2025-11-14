@@ -1,6 +1,10 @@
 package com.example.myvotingapp
 
+import android.app.AlertDialog
+import android.graphics.Color
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -64,13 +68,9 @@ class PositionsFragment : Fragment() {
 
     private fun setupObservers() {
         viewModel.formContent.observe(viewLifecycleOwner) { formView ->
-            // Clear previous form content (except the title and hint)
             formContainer.removeAllViews()
-
-            // Add the title back
             formContainer.addView(tvFormTitle)
 
-            // Add the new form content
             if (formView != null) {
                 formContainer.addView(formView)
                 tvFormHint.visibility = View.GONE
@@ -79,13 +79,82 @@ class PositionsFragment : Fragment() {
             }
         }
 
-        // Observe toast messages
+        // Observe toast messages and handle special cases
         viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
             message?.let {
-                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
-                viewModel.onToastMessageShown()
+                when {
+                    it.startsWith("CONFIRM_DELETE_POSITION:") -> {
+                        // Handle position deletion confirmation
+                        val parts = it.split(":")
+                        if (parts.size >= 4) {
+                            val positionId = parts[1].toLongOrNull()
+                            val positionName = parts[2]
+                            val candidateCount = parts[3].toIntOrNull() ?: 0
+                            if (positionId != null) {
+                                showDeletePositionConfirmation(positionId, positionName, candidateCount)
+                            }
+                        }
+                        viewModel.onToastMessageShown()
+                    }
+                    it.startsWith("Error:") -> {
+                        Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                        viewModel.onToastMessageShown()
+                    }
+                    else -> {
+                        Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+                        viewModel.onToastMessageShown()
+                    }
+                }
             }
         }
+    }
+
+    private fun showDeletePositionConfirmation(positionId: Long, positionName: String, candidateCount: Int) {
+        val message = if (candidateCount > 0) {
+            "Are you sure you want to remove '$positionName'?\n\nThis will also delete $candidateCount candidate(s) associated with this position."
+        } else {
+            "Are you sure you want to remove '$positionName'?"
+        }
+
+        val alertDialog = AlertDialog.Builder(requireContext())
+            .setTitle("Remove Position")
+            .setMessage(message)
+            .setPositiveButton("Remove") { dialog, which ->
+                // Perform deletion
+                viewModel.deletePositionById(positionId)
+            }
+            .setNegativeButton("Cancel") { dialog, which ->
+                dialog.dismiss()
+            }
+            .create()
+
+        alertDialog.setOnShowListener {
+            // Set white background
+            alertDialog.window?.setBackgroundDrawableResource(android.R.color.white)
+
+            // Get the buttons
+            val positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            val negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+
+            // Set button colors
+            positiveButton.setTextColor(Color.RED)
+            negativeButton.setTextColor(Color.GREEN)
+
+            // Make title bold and black
+            val titleTextView = alertDialog.findViewById<TextView>(android.R.id.title)
+            titleTextView?.let { tv ->
+                tv.setTextColor(Color.BLACK)
+                val spannableTitle = SpannableString(tv.text)
+                spannableTitle.setSpan(StyleSpan(android.graphics.Typeface.BOLD), 0, spannableTitle.length, 0)
+                tv.text = spannableTitle
+            }
+
+            // Make message black
+            val messageTextView = alertDialog.findViewById<TextView>(android.R.id.message)
+            messageTextView?.setTextColor(Color.BLACK)
+        }
+
+        alertDialog.show()
     }
 
     private fun showForm(title: String) {

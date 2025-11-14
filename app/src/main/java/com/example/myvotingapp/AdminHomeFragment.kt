@@ -1,6 +1,7 @@
 package com.example.myvotingapp
 
 import android.os.Bundle
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +36,18 @@ class AdminHomeFragment : Fragment() {
         initializeViews(view)
         setupClickListeners()
         setupObservers()
+
+        // Set underlined text for buttons
+        setUnderlinedButtonText()
+    }
+
+    private fun setUnderlinedButtonText() {
+        val underlinedText = "<u>More Info</u> →"
+
+        btnPositionsInfo.text = Html.fromHtml(underlinedText, Html.FROM_HTML_MODE_LEGACY)
+        btnCandidatesInfo.text = Html.fromHtml(underlinedText, Html.FROM_HTML_MODE_LEGACY)
+        btnVotersInfo.text = Html.fromHtml(underlinedText, Html.FROM_HTML_MODE_LEGACY)
+        btnVotesInfo.text = Html.fromHtml(underlinedText, Html.FROM_HTML_MODE_LEGACY)
     }
 
     private fun initializeViews(view: View) {
@@ -71,19 +84,19 @@ class AdminHomeFragment : Fragment() {
 
     private fun setupObservers() {
         viewModel.positionsInfo.observe(viewLifecycleOwner) { info ->
-            tvResultsContent.text = info
+            tvResultsContent.text = Html.fromHtml(info, Html.FROM_HTML_MODE_LEGACY)
         }
 
         viewModel.candidatesInfo.observe(viewLifecycleOwner) { info ->
-            tvResultsContent.text = info
+            tvResultsContent.text = Html.fromHtml(info, Html.FROM_HTML_MODE_LEGACY)
         }
 
         viewModel.votersInfo.observe(viewLifecycleOwner) { info ->
-            tvResultsContent.text = info
+            tvResultsContent.text = Html.fromHtml(info, Html.FROM_HTML_MODE_LEGACY)
         }
 
         viewModel.votesInfo.observe(viewLifecycleOwner) { info ->
-            tvResultsContent.text = info
+            tvResultsContent.text = Html.fromHtml(info, Html.FROM_HTML_MODE_LEGACY)
         }
     }
 

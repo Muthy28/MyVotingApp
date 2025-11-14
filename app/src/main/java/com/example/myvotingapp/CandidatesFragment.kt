@@ -2,13 +2,18 @@ package com.example.myvotingapp
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 
@@ -84,18 +89,12 @@ class CandidatesFragment : Fragment() {
 
     private fun setupObservers() {
         viewModel.formContent.observe(viewLifecycleOwner) { formView ->
-            // Clear previous form content (except the title and hint)
             formContainer.removeAllViews()
-
-            // Add the title back
             formContainer.addView(tvFormTitle)
 
-            // Add the new form content
             if (formView != null) {
                 formContainer.addView(formView)
                 tvFormHint.visibility = View.GONE
-
-                // Set up image selection for the current form
                 setupImageSelection(formView)
             } else {
                 tvFormHint.visibility = View.VISIBLE
@@ -108,6 +107,18 @@ class CandidatesFragment : Fragment() {
                 when {
                     it == "SELECT_PHOTO_ADD" -> openImagePickerForCurrentForm()
                     it == "SELECT_PHOTO_UPDATE" -> openImagePickerForCurrentForm()
+                    it.startsWith("CONFIRM_DELETE:") -> {
+                        // Handle candidate deletion confirmation
+                        val parts = it.split(":")
+                        if (parts.size >= 3) {
+                            val candidateId = parts[1].toIntOrNull()
+                            val candidateName = parts[2]
+                            if (candidateId != null) {
+                                showDeleteCandidateConfirmation(candidateId, candidateName)
+                            }
+                        }
+                        viewModel.onToastMessageShown()
+                    }
                     it.startsWith("Error:") -> {
                         Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
                         viewModel.onToastMessageShown()
@@ -119,6 +130,48 @@ class CandidatesFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun showDeleteCandidateConfirmation(candidateId: Int, candidateName: String) {
+        val alertDialog = AlertDialog.Builder(requireContext())
+            .setTitle("Remove Candidate")
+            .setMessage("Are you sure you want to remove $candidateName?")
+            .setPositiveButton("Remove") { dialog, which ->
+                // Perform deletion
+                viewModel.deleteCandidateById(candidateId)
+            }
+            .setNegativeButton("Cancel") { dialog, which ->
+                dialog.dismiss()
+            }
+            .create()
+
+        alertDialog.setOnShowListener {
+            // Set white background
+            alertDialog.window?.setBackgroundDrawableResource(android.R.color.white)
+
+            // Get the buttons
+            val positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            val negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+
+            // Set button colors
+            positiveButton.setTextColor(Color.RED)
+            negativeButton.setTextColor(Color.GREEN)
+
+            // Make title bold and black
+            val titleTextView = alertDialog.findViewById<TextView>(android.R.id.title)
+            titleTextView?.let { tv ->
+                tv.setTextColor(Color.BLACK)
+                val spannableTitle = SpannableString(tv.text)
+                spannableTitle.setSpan(StyleSpan(Typeface.BOLD), 0, spannableTitle.length, 0)
+                tv.text = spannableTitle
+            }
+
+            // Make message black
+            val messageTextView = alertDialog.findViewById<TextView>(android.R.id.message)
+            messageTextView?.setTextColor(Color.BLACK)
+        }
+
+        alertDialog.show()
     }
 
     private fun setupImageSelection(formView: View) {

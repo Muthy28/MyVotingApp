@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 class PositionsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val positionDao = AppDatabase.getDatabase(application).positionDao()
+    private val candidateDao = AppDatabase.getDatabase(application).candidateDao()
 
     private val _formContent = MutableLiveData<View?>()
     val formContent = _formContent
@@ -138,31 +139,31 @@ class PositionsViewModel(application: Application) : AndroidViewModel(applicatio
         positions: List<Position>
     ): View {
         val formView = inflater.inflate(R.layout.form_delete_position, null)
+        val positionsContainer = formView.findViewById<LinearLayout>(R.id.positionsContainer)
+        val tvNoPositions = formView.findViewById<TextView>(R.id.tvNoPositions)
 
-        val spinnerPositions = formView.findViewById<Spinner>(R.id.spinnerPositions)
-        val btnSubmit = formView.findViewById<Button>(R.id.btnSubmit)
+        // Clear previous content
+        positionsContainer.removeAllViews()
 
-        // Setup spinner
-        val positionNames = positions.map { it.name }
-        val adapter =
-            ArrayAdapter(getApplication(), android.R.layout.simple_spinner_item, positionNames)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerPositions.adapter = adapter
-
-        btnSubmit.setOnClickListener {
-            val selectedPosition = positions.getOrNull(spinnerPositions.selectedItemPosition)
-
-            if (selectedPosition == null) {
-                showError("Please select a position to delete")
-                return@setOnClickListener
-            }
+        if (positions.isEmpty()) {
+            tvNoPositions.visibility = View.VISIBLE
+            positionsContainer.visibility = View.GONE
+        } else {
+            tvNoPositions.visibility = View.GONE
+            positionsContainer.visibility = View.VISIBLE
 
             viewModelScope.launch {
                 try {
-                    positionDao.delete(selectedPosition)
-                    showSuccess("Position '${selectedPosition.name}' deleted successfully!")
+                    // Get candidate counts for each position
+                    val candidates = candidateDao.getAllCandidatesFlow().first()
+
+                    positions.forEach { position ->
+                        val candidateCount = candidates.count { it.positionId == position.positionId }
+                        val positionItemView = createPositionItemView(inflater, position, candidateCount)
+                        positionsContainer.addView(positionItemView)
+                    }
                 } catch (e: Exception) {
-                    showError("Error deleting position: ${e.message}")
+                    showError("Error loading position details: ${e.message}")
                 }
             }
         }
@@ -170,7 +171,54 @@ class PositionsViewModel(application: Application) : AndroidViewModel(applicatio
         return formView
     }
 
-    // Add the missing helper methods
+    private fun createPositionItemView(
+        inflater: LayoutInflater,
+        position: Position,
+        candidateCount: Int
+    ): View {
+        val positionItemView = inflater.inflate(R.layout.item_position_delete, null)
+
+        val tvPositionName = positionItemView.findViewById<TextView>(R.id.tvPositionName)
+        val tvCandidateCount = positionItemView.findViewById<TextView>(R.id.tvCandidateCount)
+        val btnRemove = positionItemView.findViewById<Button>(R.id.btnRemove)
+
+        tvPositionName.text = position.name
+        tvCandidateCount.text = "$candidateCount candidate(s)"
+
+        btnRemove.setOnClickListener {
+            showDeleteConfirmation(position, candidateCount)
+        }
+
+        return positionItemView
+    }
+
+    private fun showDeleteConfirmation(position: Position, candidateCount: Int) {
+        val warningMessage = if (candidateCount > 0) {
+            "This will also delete $candidateCount candidate(s) associated with this position."
+        } else {
+            "This position has no candidates."
+        }
+
+        _toastMessage.value = "CONFIRM_DELETE_POSITION:${position.positionId}:${position.name}:$candidateCount"
+    }
+
+    fun deletePositionById(positionId: Long) {
+        viewModelScope.launch {
+            try {
+                val position = positionDao.getPositionById(positionId)
+                position?.let {
+                    positionDao.delete(it)
+                    showSuccess("Position '${it.name}' removed successfully!")
+                    // Refresh the delete form
+                    showDeletePositionForm()
+                }
+            } catch (e: Exception) {
+                showError("Error removing position: ${e.message}")
+            }
+        }
+    }
+
+    // Helper methods
     private fun showError(message: String) {
         _toastMessage.value = "Error: $message"
     }
