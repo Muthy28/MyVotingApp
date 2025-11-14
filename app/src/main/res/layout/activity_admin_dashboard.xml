@@ -14,9 +14,9 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#1976D2"
+        android:background="@drawable/section_header_gradient"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:title="Admin Dashboard" />
+        android:title="MyVotingApp" />
 
     <!-- Fragment container -->
     <FrameLayout
@@ -32,6 +32,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        app:menu="@menu/admin_bottom_nav_menu" />
+        app:menu="@menu/admin_bottom_nav_menu"
+        app:itemIconTint="@color/bottom_navigation_colors"
+        app:itemTextColor="@color/bottom_navigation_colors" />/>
+
 
 </LinearLayout>

@@ -121,7 +121,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="0000000000"
+                    android:text="0798765432"
                     android:textStyle="bold"
                     android:textColor="#4B0082"/>
             </LinearLayout>

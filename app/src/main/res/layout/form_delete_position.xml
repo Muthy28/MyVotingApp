@@ -1,61 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:layout_height="match_parent"
     android:padding="16dp">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Delete Position"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="#D32F2F"
-        android:layout_marginBottom="8dp" />
+        android:orientation="vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Warning: This action cannot be undone. All candidates for this position will also be deleted."
-        android:textSize="14sp"
-        android:textColor="#D32F2F"
-        android:layout_marginBottom="16dp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select position to remove:"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginBottom="16dp" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Select the position you want to delete:"
-        android:textSize="14sp"
-        android:textColor="#666666"
-        android:layout_marginBottom="16dp" />
+        <TextView
+            android:id="@+id/tvNoPositions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No positions available to delete"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:gravity="center"
+            android:padding="32dp"
+            android:visibility="gone" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Select Position:"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:textColor="#333333"
-        android:layout_marginBottom="8dp" />
+        <LinearLayout
+            android:id="@+id/positionsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
 
-    <Spinner
-        android:id="@+id/spinnerPositions"
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:background="@drawable/edit_text_background"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:layout_marginBottom="24dp" />
-
-    <Button
-        android:id="@+id/btnSubmit"
-        android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:text="Delete Position"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:background="@drawable/btn_danger"
-        android:textColor="#FFFFFF" />
-
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

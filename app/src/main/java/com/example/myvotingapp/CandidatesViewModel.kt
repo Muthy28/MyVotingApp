@@ -267,35 +267,75 @@ class CandidatesViewModel(application: Application) : AndroidViewModel(applicati
         candidates: List<Candidate>
     ): View {
         val formView = inflater.inflate(R.layout.form_delete_candidate, null)
+        val candidatesContainer = formView.findViewById<LinearLayout>(R.id.candidatesContainer)
+        val tvNoCandidates = formView.findViewById<TextView>(R.id.tvNoCandidates)
 
-        val spinnerCandidates = formView.findViewById<Spinner>(R.id.spinnerCandidates)
-        val btnSubmit = formView.findViewById<Button>(R.id.btnSubmit)
+        candidatesContainer.removeAllViews()
 
-        // Setup candidates spinner
-        val candidateNames = candidates.map { it.name }
-        val adapter = ArrayAdapter(getApplication(), android.R.layout.simple_spinner_item, candidateNames)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerCandidates.adapter = adapter
-
-        btnSubmit.setOnClickListener {
-            val selectedCandidate = candidates.getOrNull(spinnerCandidates.selectedItemPosition)
-
-            if (selectedCandidate == null) {
-                showError("Please select a candidate to delete")
-                return@setOnClickListener
-            }
+        if (candidates.isEmpty()) {
+            tvNoCandidates.visibility = View.VISIBLE
+            candidatesContainer.visibility = View.GONE
+        } else {
+            tvNoCandidates.visibility = View.GONE
+            candidatesContainer.visibility = View.VISIBLE
 
             viewModelScope.launch {
                 try {
-                    candidateDao.deleteCandidate(selectedCandidate)
-                    showSuccess("Candidate '${selectedCandidate.name}' deleted successfully!")
+                    val positions = positionDao.getAllPositionsFlow().first()
+
+                    candidates.forEach { candidate ->
+                        val position = positions.find { it.positionId == candidate.positionId }
+                        val candidateItemView = createCandidateItemView(inflater, candidate, position?.name ?: "Unknown Position")
+                        candidatesContainer.addView(candidateItemView)
+                    }
                 } catch (e: Exception) {
-                    showError("Error deleting candidate: ${e.message}")
+                    showError("Error loading candidate details: ${e.message}")
                 }
             }
         }
 
         return formView
+    }
+
+    private fun createCandidateItemView(
+        inflater: LayoutInflater,
+        candidate: Candidate,
+        positionName: String
+    ): View {
+        val candidateItemView = inflater.inflate(R.layout.item_candidate_delete, null)
+
+        val tvCandidateName = candidateItemView.findViewById<TextView>(R.id.tvCandidateName)
+        val tvCandidatePosition = candidateItemView.findViewById<TextView>(R.id.tvCandidatePosition)
+        val btnRemove = candidateItemView.findViewById<Button>(R.id.btnRemove)
+
+        tvCandidateName.text = candidate.name
+        tvCandidatePosition.text = positionName
+
+        btnRemove.setOnClickListener {
+            showDeleteConfirmation(candidate)
+        }
+
+        return candidateItemView
+    }
+
+    private fun showDeleteConfirmation(candidate: Candidate) {
+        _toastMessage.value = "CONFIRM_DELETE:${candidate.candidateId}:${candidate.name}"
+    }
+
+    fun deleteCandidateById(candidateId: Int) {
+        viewModelScope.launch {
+            try {
+                val candidate = candidateDao.getCandidateById(candidateId.toLong())
+                candidate?.let {
+                    candidateDao.deleteCandidate(it)
+                    showSuccess("Candidate '${it.name}' removed successfully!")
+                    // Refresh the delete form
+                    showDeleteCandidateForm()
+                }
+            } catch (e: Exception) {
+                showError("Error removing candidate: ${e.message}")
+            }
+        }
     }
 
     private fun copyImageToInternalStorage(uri: Uri): String? {
