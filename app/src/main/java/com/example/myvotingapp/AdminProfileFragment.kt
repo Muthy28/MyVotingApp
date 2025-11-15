@@ -33,7 +33,7 @@ class AdminProfileFragment : Fragment() {
         // Set up logout button
         val btnLogout = view.findViewById<Button>(R.id.btnLogout)
         btnLogout.setOnClickListener {
-            showLogoutConfirmation() // Fixed: call showLogoutConfirmation instead of logout directly
+            showLogoutConfirmation()
         }
     }
 
