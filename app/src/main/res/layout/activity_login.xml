@@ -98,18 +98,36 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <!-- Password Field -->
-                <EditText
-                    android:id="@+id/etPassword"
-                    android:hint="Enter Password"
-                    android:inputType="textPassword"
-                    android:background="@drawable/bg_edittext"
-                    android:padding="12dp"
+                <!-- Password Field with Toggle -->
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:textColor="#000000"
-                    android:textColorHint="#666666" />
+                    android:layout_marginBottom="12dp">
+
+                    <EditText
+                        android:id="@+id/etPassword"
+                        android:hint="Enter Password"
+                        android:inputType="textPassword"
+                        android:background="@drawable/bg_edittext"
+                        android:padding="12dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="#000000"
+                        android:textColorHint="#666666"
+                        android:paddingEnd="48dp" />
+
+                    <ImageButton
+                        android:id="@+id/btnTogglePassword"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="12dp"
+                        android:background="@android:color/transparent"
+                        android:src="@android:drawable/ic_menu_view"
+                        android:contentDescription="Toggle password visibility" />
+
+                </RelativeLayout>
 
                 <!-- Remember Me Checkbox - Enhanced Visibility -->
                 <CheckBox

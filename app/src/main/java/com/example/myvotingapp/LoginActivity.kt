@@ -15,6 +15,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var dao: VoterDao
     private lateinit var sharedPreferences: SharedPreferences
+    private var isPasswordVisible = false
 
     companion object {
         private const val TAG = "LoginActivity"
@@ -42,6 +43,9 @@ class LoginActivity : AppCompatActivity() {
             Toast.makeText(this, "Database error: ${e.message}", Toast.LENGTH_LONG).show()
             return
         }
+
+        // Setup password toggle functionality
+        setupPasswordToggle()
 
         // Pre-fill ID if coming from registration
         binding.etIdNumber.setText(intent.getStringExtra("ID_NUMBER") ?: "")
@@ -77,6 +81,14 @@ class LoginActivity : AppCompatActivity() {
                                 }
                                 startActivity(Intent(this@LoginActivity, AdminDashboardActivity::class.java))
                                 finish()
+                            }
+                            idNumber == "12345678" && password != "admin" -> {
+                                Log.d(TAG, "Admin login failed - wrong password")
+                                Toast.makeText(this@LoginActivity, "Invalid credentials", Toast.LENGTH_SHORT).show()
+                            }
+                            voter == null -> {
+                                Log.d(TAG, "Voter not found for ID: $idNumber")
+                                Toast.makeText(this@LoginActivity, "Voter Not Found", Toast.LENGTH_SHORT).show()
                             }
                             voter != null && voter.password.trim() == password -> {
                                 Log.d(TAG, "Voter login successful for: ${voter.firstName}")
@@ -114,6 +126,25 @@ class LoginActivity : AppCompatActivity() {
         binding.tvRegister.setOnClickListener {
             Log.d(TAG, "Navigate to RegisterActivity")
             startActivity(Intent(this, RegisterActivity::class.java))
+        }
+    }
+
+    private fun setupPasswordToggle() {
+        binding.btnTogglePassword.setOnClickListener {
+            isPasswordVisible = !isPasswordVisible
+
+            if (isPasswordVisible) {
+                // Show password
+                binding.etPassword.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                binding.btnTogglePassword.setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
+            } else {
+                // Hide password
+                binding.etPassword.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+                binding.btnTogglePassword.setImageResource(android.R.drawable.ic_menu_view)
+            }
+
+            // Move cursor to end
+            binding.etPassword.setSelection(binding.etPassword.text.length)
         }
     }
 

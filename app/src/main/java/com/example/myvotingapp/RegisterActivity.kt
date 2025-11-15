@@ -12,6 +12,7 @@ class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var dao: VoterDao
+    private var isPasswordVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,6 +20,9 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         dao = AppDatabase.getDatabase(this).voterDao()
+
+        // Setup password toggle functionality
+        setupPasswordToggle()
 
         binding.btnRegister.setOnClickListener {
             val firstName = binding.etFirstName.text.toString().trim()
@@ -55,6 +59,25 @@ class RegisterActivity : AppCompatActivity() {
 
         binding.tvLogin.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
+        }
+    }
+
+    private fun setupPasswordToggle() {
+        binding.btnTogglePassword.setOnClickListener {
+            isPasswordVisible = !isPasswordVisible
+
+            if (isPasswordVisible) {
+                // Show password
+                binding.etPassword.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                binding.btnTogglePassword.setImageResource(android.R.drawable.ic_menu_close_clear_cancel)
+            } else {
+                // Hide password
+                binding.etPassword.inputType = android.text.InputType.TYPE_CLASS_TEXT or android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+                binding.btnTogglePassword.setImageResource(android.R.drawable.ic_menu_view)
+            }
+
+            // Move cursor to end
+            binding.etPassword.setSelection(binding.etPassword.text.length)
         }
     }
 }
