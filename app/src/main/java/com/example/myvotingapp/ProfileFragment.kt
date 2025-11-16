@@ -80,11 +80,10 @@ class ProfileFragment : Fragment() {
             showLogoutConfirmation()
         }
 
-        // Remove delete account click listener
     }
 
     private fun saveProfileChanges() {
-        // Since First Name, Last Name, and Mobile are now disabled,
+        // First Name, Last Name, and Mobile are now disabled,
         // only password can be changed
         val password = binding.etPassword.text.toString().trim()
 

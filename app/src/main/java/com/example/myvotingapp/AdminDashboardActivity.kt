@@ -23,7 +23,7 @@ class AdminDashboardActivity : AppCompatActivity() {
 
         showHomeFragment()
     }
-
+    //Activate the Nav Bars
     private fun setupBottomNavigation() {
         bottomNavigationView.setOnItemSelectedListener { item ->
             when (item.itemId) {

@@ -190,7 +190,7 @@ class VotersViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    // Helper methods
+    // Other helping methods
     private fun showError(message: String) {
         _toastMessage.value = "Error: $message"
     }

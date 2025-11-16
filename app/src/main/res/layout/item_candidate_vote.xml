@@ -30,7 +30,7 @@
         android:layout_weight="1"
         android:gravity="center_vertical"/>
 
-    <!-- Checkbox with enhanced visibility -->
+    <!-- Checkbox  -->
     <CheckBox
         android:id="@+id/cbVote"
         android:layout_width="wrap_content"

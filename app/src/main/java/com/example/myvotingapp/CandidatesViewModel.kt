@@ -95,7 +95,7 @@ class CandidatesViewModel(application: Application) : AndroidViewModel(applicati
 
         // Photo selection
         btnSelectPhoto.setOnClickListener {
-            // This will be handled by the fragment
+            // This will be handled in the fragment
             _toastMessage.value = "SELECT_PHOTO_ADD"
         }
 
@@ -207,7 +207,7 @@ class CandidatesViewModel(application: Application) : AndroidViewModel(applicati
 
         // Photo selection
         btnSelectPhoto.setOnClickListener {
-            // This will be handled by the fragment
+            // This will be handled in the fragment
             _toastMessage.value = "SELECT_PHOTO_UPDATE"
         }
 
@@ -367,7 +367,7 @@ class CandidatesViewModel(application: Application) : AndroidViewModel(applicati
         imageView?.setImageURI(uri)
     }
 
-    // Helper methods
+    // Other helping methods
     private fun showError(message: String) {
         _toastMessage.value = "Error: $message"
     }

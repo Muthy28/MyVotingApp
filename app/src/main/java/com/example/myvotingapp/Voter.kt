@@ -9,5 +9,5 @@ data class Voter(
     val firstName: String,
     val lastName: String,
     val mobile: String,
-    val password: String // store plain for demo; in real app hash it
+    val password: String // hash it in the app
 )

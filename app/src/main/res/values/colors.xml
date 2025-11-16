@@ -7,9 +7,6 @@
     <color name="blue_default">#37474F</color>
     <color name="blue_pressed">#546E7A</color>
 
-
-
-
     <!-- Background and text colors -->
     <color name="colorBackground">#FFFFFF</color>
     <color name="colorSurface">#FFFFFF</color>
@@ -17,6 +14,5 @@
     <color name="colorOnBackground">#000000</color>
     <color name="colorOnSurface">#000000</color>
 
-    <!-- ADD THIS LINE -->
     <color name="launcher_background">#4B0082</color>
 </resources>

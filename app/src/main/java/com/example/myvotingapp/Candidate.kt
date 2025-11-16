@@ -12,14 +12,14 @@ import androidx.room.PrimaryKey
         childColumns = ["positionId"],
         onDelete = ForeignKey.CASCADE // Ensures candidates are removed if their position is deleted
     )],
-    indices = [Index(value = ["positionId"])] // Improves query performance
+    indices = [Index(value = ["positionId"])]
 )
 data class Candidate(
     @PrimaryKey(autoGenerate = true)
     val candidateId: Long = 0,
     val name: String,
-    val positionId: Long,      // foreign key to Position (no enforced FK here for simplicity)
+    val positionId: Long,      // foreign key to Position
     val manifesto: String,
     val imageUrl: String?,     // local drawable URI or remote URL
-    val voteCount: Int = 0     // optional cached count
+    val voteCount: Int = 0
 )

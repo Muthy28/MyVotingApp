@@ -118,7 +118,7 @@ class VoteFragment : Fragment() {
                     }
                 }
             } catch (e: Exception) {
-                // Only show error for non-cancellation exceptions and if fragment is still active
+                // Only show error for non-cancellation exceptions and if VoteFragment is still active
                 if (e !is kotlinx.coroutines.CancellationException &&
                     binding.rvCandidates.visibility == View.VISIBLE &&
                     isAdded) {
@@ -311,7 +311,7 @@ class VoteFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Cancel all ongoing jobs when fragment is destroyed
+        // Cancel all ongoing jobs when fragment is destroyed - The search bar won't be visible after voting
         searchJob?.cancel()
         checkVoteJob?.cancel()
         _binding = null
@@ -389,7 +389,7 @@ class VoteFragment : Fragment() {
                 // Set checkbox state - checked if this candidate is selected for this position
                 binding.cbVote.isChecked = selectedCandidates[candidate.positionId] == candidate.candidateId
 
-                // Handle checkbox clicks - SINGLE SELECTION PER POSITION
+                // Handle checkbox clicks - single selection per position
                 binding.cbVote.setOnClickListener {
                     if (binding.cbVote.isChecked) {
                         // Unselect any previously selected candidate for this position

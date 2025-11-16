@@ -129,7 +129,7 @@
 
                 </RelativeLayout>
 
-                <!-- Remember Me Checkbox - Enhanced Visibility -->
+                <!-- Remember Me Checkbox  -->
                 <CheckBox
                     android:id="@+id/cbRememberMe"
                     android:text="Remember me"

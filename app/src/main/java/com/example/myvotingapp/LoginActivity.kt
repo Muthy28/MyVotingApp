@@ -32,7 +32,7 @@ class LoginActivity : AppCompatActivity() {
 
         Log.d(TAG, "LoginActivity created")
 
-        // Initialize SharedPreferences
+        // Initialize SharedPreferences - both Admin and Voters
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
 
         try {

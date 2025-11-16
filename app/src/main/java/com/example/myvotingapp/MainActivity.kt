@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Get the logged-in voter ID from intent
+        // Get the logged-in voter ID once they have Logged in
         loggedInVoterId = intent.getStringExtra("LOGGED_IN_VOTER_ID") ?: ""
 
         db = AppDatabase.getDatabase(this)
@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
 
                     items
                 }.collect { items ->
-                    // Only update if home content is still visible and job is active
+                    // Only update if home content is still visible
                     if (binding.homeContent.visibility == View.VISIBLE && isActive) {
                         adapter.submitList(items)
                     }

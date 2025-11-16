@@ -79,7 +79,7 @@ class VotersFragment : Fragment() {
                         val parts = it.split("|")
                         if (parts.size >= 3) {
                             val voterId = parts[1]
-                            val voterName = parts[2] // Full name is now in one part
+                            val voterName = parts[2]
                             showDeleteVoterConfirmation(voterId, voterName)
                         }
                         viewModel.onToastMessageShown()

@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.myvotingapp.databinding.ActivityVeryFirstScreenBinding
 
 class VeryFirstScreenActivity : AppCompatActivity() {
-
+//This is the screen seen by users who are new or those who don't check on remember me box and destroy the activity
     private lateinit var binding: ActivityVeryFirstScreenBinding
     private lateinit var sharedPreferences: SharedPreferences
 

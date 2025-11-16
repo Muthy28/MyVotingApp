@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/firstscreen_background">
 
-    <!-- Fullscreen Hero Section -->
+    <!-- Fullscreen Hero Abstract Section -->
     <ImageView
         android:id="@+id/hero_top"
         android:layout_width="match_parent"

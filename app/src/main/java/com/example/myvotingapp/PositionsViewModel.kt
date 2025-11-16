@@ -218,7 +218,7 @@ class PositionsViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    // Helper methods
+    // Other helping methods
     private fun showError(message: String) {
         _toastMessage.value = "Error: $message"
     }
@@ -227,7 +227,7 @@ class PositionsViewModel(application: Application) : AndroidViewModel(applicatio
         _toastMessage.value = message
     }
 
-    // Call this from your fragment after showing the toast
+    // Call this from the PositionsFragment after showing the toast
     fun onToastMessageShown() {
         _toastMessage.value = null
     }

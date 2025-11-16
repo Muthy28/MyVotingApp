@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.myvotingapp.databinding.ActivityFirstScreenBinding
 
 class FirstScreenActivity : AppCompatActivity() {
-
+//This is the screen that users who have logged in before and decided to logout
     private lateinit var binding: ActivityFirstScreenBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

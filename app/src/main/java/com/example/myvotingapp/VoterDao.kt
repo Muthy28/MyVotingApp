@@ -18,7 +18,6 @@ interface VoterDao {
     @Delete
     suspend fun deleteVoter(voter: Voter)
 
-    // ADD THIS UPDATE METHOD
     @Update
     suspend fun updateVoter(voter: Voter)
 }

@@ -188,7 +188,7 @@
 
                 </RelativeLayout>
 
-                <!-- Register Button (Blue) -->
+                <!-- Register Button -->
                 <Button
                     android:id="@+id/btnRegister"
                     android:text="Register"
@@ -200,7 +200,7 @@
                     android:padding="12dp"
                     android:background="@drawable/bg_button" />
 
-                <!-- Login Link (Centered and Bold) -->
+                <!-- Login Link -->
                 <TextView
                     android:id="@+id/tvLogin"
                     android:text="Already have an account? Login"

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import java.io.File
 
+//This provides the Candidates and their various positions they are vying for
 sealed class ListItem {
     data class Header(val positionName: String) : ListItem()
     data class CandidateItem(val candidate: Candidate) : ListItem()
