@@ -37,7 +37,6 @@ class AdminHomeFragment : Fragment() {
         setupClickListeners()
         setupObservers()
 
-        // Set underlined text for buttons
         setUnderlinedButtonText()
     }
 

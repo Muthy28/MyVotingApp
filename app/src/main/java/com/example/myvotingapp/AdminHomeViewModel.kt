@@ -39,7 +39,7 @@ class AdminHomeViewModel(application: Application) : AndroidViewModel(applicatio
                     result.append("<b>Candidates per Position:</b><br>")
                     positions.forEachIndexed { index, position ->
                         val candidateCount = candidates.count { it.positionId == position.positionId }
-                        val positionText = "${index + 1}. ${position.name}:" // Changed to numbers
+                        val positionText = "${index + 1}. ${position.name}:"
                         result.append("<b>${positionText}${getTabSpacing(positionText)}$candidateCount candidate(s)</b><br>")
                     }
                 } else {
@@ -66,7 +66,7 @@ class AdminHomeViewModel(application: Application) : AndroidViewModel(applicatio
                     result.append("<b>Candidate Details:</b><br>")
                     candidates.forEachIndexed { index, candidate ->
                         val positionName = positions.find { it.positionId == candidate.positionId }?.name ?: "Unknown Position"
-                        val candidateText = "${index + 1}. ${candidate.name}" // Changed to numbers
+                        val candidateText = "${index + 1}. ${candidate.name}"
                         result.append("<b>${candidateText}${getTabSpacing(candidateText)}$positionName</b><br>")
                     }
                 } else {
@@ -90,9 +90,9 @@ class AdminHomeViewModel(application: Application) : AndroidViewModel(applicatio
 
                 if (voters.isNotEmpty()) {
                     result.append("<b>Voter List:</b><br>")
-                    voters.take(10).forEachIndexed { index, voter -> // Changed to numbers
+                    voters.take(10).forEachIndexed { index, voter ->
                         val fullName = "${voter.firstName} ${voter.lastName}"
-                        val voterText = "${index + 1}. $fullName" // Changed to numbers
+                        val voterText = "${index + 1}. $fullName"
                         result.append("<b>${voterText}${getTabSpacing(voterText)}(${voter.mobile})</b><br>")
                     }
                     if (voters.size > 10) {
@@ -120,7 +120,6 @@ class AdminHomeViewModel(application: Application) : AndroidViewModel(applicatio
                 result.append("<b>Total Votes Cast:${getTabSpacing("Total Votes Cast:")}$totalVotes vote(s)</b><br><br>")
 
                 if (candidates.isNotEmpty() && positions.isNotEmpty()) {
-                    // Group candidates by position and sort by votes
                     val positionsWithCandidates = positions.map { position ->
                         val positionCandidates = candidates
                             .filter { it.positionId == position.positionId }
@@ -134,7 +133,6 @@ class AdminHomeViewModel(application: Application) : AndroidViewModel(applicatio
                         result.append("<b><font color='#1976D2'>${position.name.toUpperCase()}</font></b><br>")
                         result.append("<b>Total Votes for ${position.name}:${getTabSpacing("Total Votes for ${position.name}:")}$positionTotalVotes vote(s)</b><br><br>")
 
-                        // Table header
                         result.append("<b>Candidate${getTabSpacing("Candidate", 25)}Votes${getTabSpacing("Votes", 10)}Percentage</b><br>")
 
                         positionCandidates.forEachIndexed { index, candidate ->
@@ -142,23 +140,23 @@ class AdminHomeViewModel(application: Application) : AndroidViewModel(applicatio
                                 String.format("%.1f", (candidate.voteCount.toDouble() / positionTotalVotes) * 100)
                             } else "0.0"
 
-                            val candidateText = "${index + 1}. ${candidate.name}" // Already using numbers
+                            val candidateText = "${index + 1}. ${candidate.name}"
                             val votesText = "${candidate.voteCount}"
                             val percentageText = "$percentage%"
 
                             result.append("<b>${candidateText}${getTabSpacing(candidateText, 25)}${votesText}${getTabSpacing(votesText, 15)}$percentageText</b><br>")
                         }
 
-                        // Add enhanced bar chart visualization
+                        // Bar chart visualization
                         result.append("<br><b>Vote Distribution Chart:</b><br>")
                         positionCandidates.forEachIndexed { index, candidate ->
                             val percentage = if (positionTotalVotes > 0) {
                                 (candidate.voteCount.toDouble() / positionTotalVotes) * 100
                             } else 0.0
 
-                            val barLength = (percentage / 3).toInt() // Scale for bar length
-                            val bar = "█".repeat(maxOf(1, barLength)) // Ensure at least one block
-                            val candidateText = "${index + 1}. ${candidate.name}" // Already using numbers
+                            val barLength = (percentage / 3).toInt()
+                            val bar = "█".repeat(maxOf(1, barLength))
+                            val candidateText = "${index + 1}. ${candidate.name}"
                             val percentageDisplay = String.format("%.1f%%", percentage)
 
                             result.append("<b>$candidateText</b><br>")
